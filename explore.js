@@ -691,6 +691,91 @@ const previewPlanet =
 previewScene.add(
     previewPlanet
 );
+/* =========================================================
+   HOLOGRAM ZOOM
+   ========================================================= */
+
+let previewZoom = 5.2;
+
+const PREVIEW_MIN_ZOOM = 2.8;
+const PREVIEW_MAX_ZOOM = 8.5;
+
+
+function updatePreviewZoom() {
+
+    previewCamera.position.z =
+        previewZoom;
+}
+
+
+/* Zoom in */
+
+document.getElementById(
+    "previewZoomIn"
+).addEventListener(
+    "click",
+    () => {
+
+        previewZoom -= 0.45;
+
+        previewZoom =
+            Math.max(
+                PREVIEW_MIN_ZOOM,
+                previewZoom
+            );
+
+        updatePreviewZoom();
+    }
+);
+
+
+/* Zoom out */
+
+document.getElementById(
+    "previewZoomOut"
+).addEventListener(
+    "click",
+    () => {
+
+        previewZoom += 0.45;
+
+        previewZoom =
+            Math.min(
+                PREVIEW_MAX_ZOOM,
+                previewZoom
+            );
+
+        updatePreviewZoom();
+    }
+);
+
+
+/* Mouse wheel zoom */
+
+previewContainer.addEventListener(
+    "wheel",
+    (event) => {
+
+        event.preventDefault();
+
+        previewZoom +=
+            event.deltaY > 0
+                ? 0.35
+                : -0.35;
+
+        previewZoom =
+            Math.max(
+                PREVIEW_MIN_ZOOM,
+                Math.min(
+                    PREVIEW_MAX_ZOOM,
+                    previewZoom
+                )
+            );
+
+        updatePreviewZoom();
+    },
+    { passive: false }
+);
 
 
 /* =========================================================
@@ -878,33 +963,102 @@ function updateDatabase(planet) {
     if (!planetInfo || !planet) return;
 
 
+    const description =
+        planet.description ||
+        "No database description available.";
+
+
     planetInfo.innerHTML = `
 
-        <h2>${planet.name.toUpperCase()}</h2>
+        <div class="databasePlanetHeader">
 
-        <p>
-            <strong>Distance:</strong>
-            ${planet.distance}
-        </p>
+            <span class="databaseStatusDot"></span>
 
-        <p>
-            <strong>Orbital Speed:</strong>
-            ${planet.speed}
-        </p>
+            <h2>
+                ${planet.name.toUpperCase()}
+            </h2>
 
-        <p>
-            <strong>Status:</strong>
-            ONLINE
-        </p>
+        </div>
 
-        <p>
-            <strong>Target:</strong>
-            LOCKED
-        </p>
+
+        <div class="databaseDescription">
+
+            <span class="databaseLabel">
+                DESCRIPTION
+            </span>
+
+            <p>
+                ${description}
+            </p>
+
+        </div>
+
+
+        <div class="databaseStats">
+
+            <div class="databaseStat">
+
+                <span>
+                    DISTANCE
+                </span>
+
+                <strong>
+                    ${
+                        planet.name === "Sun"
+                            ? "CENTER"
+                            : planet.distance
+                    }
+                </strong>
+
+            </div>
+
+
+            <div class="databaseStat">
+
+                <span>
+                    ORBITAL SPEED
+                </span>
+
+                <strong>
+                    ${
+                        planet.name === "Sun"
+                            ? "—"
+                            : planet.speed
+                    }
+                </strong>
+
+            </div>
+
+
+            <div class="databaseStat">
+
+                <span>
+                    STATUS
+                </span>
+
+                <strong>
+                    ONLINE
+                </strong>
+
+            </div>
+
+
+            <div class="databaseStat">
+
+                <span>
+                    TARGET
+                </span>
+
+                <strong>
+                    LOCKED
+                </strong>
+
+            </div>
+
+        </div>
 
     `;
 }
-
 
 /* =========================================================
    MOUSE CLICK PLANET DETECTION
