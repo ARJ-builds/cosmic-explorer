@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cosmic Explorer</title>
+
+<link rel="stylesheet" href="explore.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- TOP BAR -->
+
+    <header id="topBar">
+
+        <a href="index.html" class="logo-link"><div class="logo">
+            COSMIC EXPLORER
+        </div></a>
+
+        <div class="status">
+
+            <span id="fpsLabel">FPS --</span>
+
+            <span id="clock">00:00:00</span>
+
+        </div>
+
+    </header>
+
+    <!-- CENTER -->
+
+    <div id="workspace">
+
+        <!-- LEFT -->
+
+        <aside id="leftPanel">
+
+            <h2>NAVIGATION</h2>
+
+            <button id="solarSystemBtn">Solar System</button>
+            <button id="planetsBtn">Planets</button>
+            <button id="galleryBtn">Gallery</button>
+            <button id="settingsBtn">Settings</button>
+
+        </aside>
+
+        <!-- VIEW -->
+
+        <main id="viewer">
+
+    <div id="canvas-container"></div>
+
+    <div id="crosshair"></div>
+
+    <!-- PLANET SELECTION PANEL -->
+
+    <div id="planetSelector">
+
+        <div class="planetSelectorHeader">
+            <span>PLANETS</span>
+            <button id="closePlanetSelector">×</button>
+        </div>
+
+        <div id="planetList">
+
+            <button data-planet="Mercury">Mercury</button>
+            <button data-planet="Venus">Venus</button>
+            <button data-planet="Earth">Earth</button>
+            <button data-planet="Mars">Mars</button>
+            <button data-planet="Jupiter">Jupiter</button>
+            <button data-planet="Saturn">Saturn</button>
+            <button data-planet="Uranus">Uranus</button>
+            <button data-planet="Neptune">Neptune</button>
+
+        </div>
+
+    </div>
+
+</main>
+
+        <!-- RIGHT -->
+
+        <aside id="rightPanel">
+
+            <h2>DATABASE</h2>
+
+            <div id="planetInfo">
+
+    <h2>SELECT A PLANET</h2>
+
+    <p>
+        Click any planet in the Solar System.
+    </p>
+
+    <button id="openDatabaseBtn" style="display:none;">
+        OPEN DATABASE
+    </button>
+
+</div>
+
+        </aside>
+
+    </div>
+
+    <!-- BOTTOM -->
+
+    <footer id="bottomBar">
+
+    <div class="control">
+        <h3>SIM TIME</h3>
+        <p id="simTime">00:00:00</p>
+    </div>
+
+    <div class="control">
+        <h3>CAMERA</h3>
+        <p id="cameraMode">FREE ORBIT</p>
+    </div>
+
+    <div class="control">
+
+        <h3>SPEED</h3>
+
+        <p id="speedDisplay">1.0×</p>
+
+        <input
+            type="range"
+            id="speedSlider"
+            min="0.1"
+            max="100"
+            step="0.1"
+            value="1">
+
+        <div>
+
+            <button id="playBtn">▶</button>
+
+            <button id="pauseBtn">⏸</button>
+
+        </div>
+
+    </div>
+
+</footer>
+</div>
+
+<script type="module" src="explore.js"></script>
+
+</body>
+
+</html>
