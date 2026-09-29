@@ -1,758 +1,1270 @@
-import * as THREE from "./libs/three.module.js";
-import { OrbitControls } from "./libs/addons/controls/OrbitControls.js";
-const response = await fetch("./data/planets.json");
-const PLANET_DATABASE = await response.json();
-let simulationSeconds = 0;
-/* =====================================================
-   CANVAS
-===================================================== */
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 
-const container = document.getElementById("canvas-container");
+/* =========================================================
+   COSMIC EXPLORER
+   Main Solar System + Rotating Planet Hologram
+   ========================================================= */
 
-/* =====================================================
-   SCENE
-===================================================== */
+
+/* =========================================================
+   BASIC SETUP
+   ========================================================= */
+
+const canvasContainer = document.getElementById("canvas-container");
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x020611);
 
-/* =====================================================
-   RAYCASTER
-===================================================== */
-
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-let selectedPlanet = null;
-
-/* =====================================================
-   SIMULATION
-===================================================== */
-
-let simulationSpeed = 1;
-
-let isPaused = false;
-
-/* =====================================================
-   CAMERA
-===================================================== */
+scene.background = new THREE.Color(0x01040a);
 
 const camera = new THREE.PerspectiveCamera(
-45,
-container.clientWidth/container.clientHeight,
-0.1,
-6000
+    60,
+    canvasContainer.clientWidth / canvasContainer.clientHeight,
+    0.1,
+    5000
 );
 
-camera.position.set(0,180,520);
+camera.position.set(0, 100, 300);
 
-/* =====================================================
-   RENDERER
-===================================================== */
+
+/* =========================================================
+   MAIN RENDERER
+   ========================================================= */
 
 const renderer = new THREE.WebGLRenderer({
-antialias:true
+    antialias: true
 });
 
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(container.clientWidth,container.clientHeight);
+renderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
+);
 
-container.appendChild(renderer.domElement);
+renderer.setSize(
+    canvasContainer.clientWidth,
+    canvasContainer.clientHeight
+);
 
-/* =====================================================
-   CONTROLS
-===================================================== */
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-const controls = new OrbitControls(camera,renderer.domElement);
+canvasContainer.appendChild(renderer.domElement);
 
-controls.enableDamping=true;
-controls.dampingFactor=.05;
 
-controls.maxDistance=3000;
-controls.minDistance=20;
+/* =========================================================
+   ORBIT CONTROLS
+   ========================================================= */
 
-/* =====================================================
+const controls = new OrbitControls(
+    camera,
+    renderer.domElement
+);
+
+controls.enableDamping = true;
+
+controls.dampingFactor = 0.05;
+
+controls.minDistance = 20;
+
+controls.maxDistance = 1500;
+
+
+/* =========================================================
    LIGHTING
-===================================================== */
+   ========================================================= */
 
-scene.add(
-new THREE.AmbientLight(0xffffff,.25)
+const ambientLight = new THREE.AmbientLight(
+    0xffffff,
+    0.45
 );
 
-const sunLight=new THREE.PointLight(
-0xffdd99,
-10,
-0
+scene.add(ambientLight);
+
+
+const sunLight = new THREE.PointLight(
+    0xffffff,
+    3,
+    2500
 );
+
+sunLight.position.set(0, 0, 0);
 
 scene.add(sunLight);
 
-/* =====================================================
+
+/* =========================================================
+   STARS
+   ========================================================= */
+
+function createStars() {
+
+    const starGeometry =
+        new THREE.BufferGeometry();
+
+    const starCount = 5000;
+
+    const positions =
+        new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount; i++) {
+
+        const i3 = i * 3;
+
+        positions[i3] =
+            (Math.random() - 0.5) * 4000;
+
+        positions[i3 + 1] =
+            (Math.random() - 0.5) * 4000;
+
+        positions[i3 + 2] =
+            (Math.random() - 0.5) * 4000;
+    }
+
+    starGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(
+            positions,
+            3
+        )
+    );
+
+    const starMaterial =
+        new THREE.PointsMaterial({
+            color: 0x8feaff,
+            size: 1.4,
+            sizeAttenuation: true
+        });
+
+    const stars =
+        new THREE.Points(
+            starGeometry,
+            starMaterial
+        );
+
+    scene.add(stars);
+
+    return stars;
+}
+
+const stars = createStars();
+
+
+/* =========================================================
    TEXTURES
-===================================================== */
+   ========================================================= */
 
-const loader=new THREE.TextureLoader();
+const loader =
+    new THREE.TextureLoader();
 
-const textures={
+const textures = {
 
-sun:loader.load("./textures/sun.jfif"),
+    sun: loader.load("./textures/sun.jfif"),
 
-mercury:loader.load("./textures/mercury.jfif"),
+    mercury:
+        loader.load("./textures/mercury.jfif"),
 
-venus:loader.load("./textures/venus.jfif"),
+    venus:
+        loader.load("./textures/venus.jfif"),
 
-earth:loader.load("./textures/earth.jpg"),
+    earth:
+        loader.load("./textures/earth.jpg"),
 
-mars:loader.load("./textures/mars.jfif"),
+    mars:
+        loader.load("./textures/mars.jfif"),
 
-jupiter:loader.load("./textures/jupiter.jfif"),
+    jupiter:
+        loader.load("./textures/jupiter.jfif"),
 
-saturn:loader.load("./textures/saturn.jfif"),
+    saturn:
+        loader.load("./textures/saturn.jfif"),
 
-uranus:loader.load("./textures/uranus.jfif"),
+    uranus:
+        loader.load("./textures/uranus.jfif"),
 
-neptune:loader.load("./textures/neptune.jfif"),
+    neptune:
+        loader.load("./textures/neptune.jfif"),
 
-ring:loader.load("./textures/saturn_ring.png")
-
+    ring:
+        loader.load("./textures/saturn_ring.png")
 };
 
-/* =====================================================
-   SOLAR SYSTEM DATA
-===================================================== */
 
-const PLANETS=[
+/* =========================================================
+   PLANET DATA
+   ========================================================= */
 
-{
-name:"Mercury",
-radius:2,
-distance:.11,
-speed:.020,
-texture:textures.mercury
-},
+const PLANETS = [
 
-{
-name:"Venus",
-radius:3.2,
-distance:.17,
-speed:.015,
-texture:textures.venus
-},
+    {
+        name: "Mercury",
+        radius: 3,
+        distance: 35,
+        speed: 0.04,
+        texture: textures.mercury
+    },
 
-{
-name:"Earth",
-radius:3.4,
-distance:.24,
-speed:.012,
-texture:textures.earth
-},
+    {
+        name: "Venus",
+        radius: 5,
+        distance: 55,
+        speed: 0.025,
+        texture: textures.venus
+    },
 
-{
-name:"Mars",
-radius:2.6,
-distance:.33,
-speed:.009,
-texture:textures.mars
-},
+    {
+        name: "Earth",
+        radius: 5.5,
+        distance: 75,
+        speed: 0.02,
+        texture: textures.earth
+    },
 
-{
-name:"Jupiter",
-radius:8,
-distance:.47,
-speed:.004,
-texture:textures.jupiter
-},
+    {
+        name: "Mars",
+        radius: 4,
+        distance: 100,
+        speed: 0.016,
+        texture: textures.mars
+    },
 
-{
-name:"Saturn",
-radius:7,
-distance:.62,
-speed:.003,
-texture:textures.saturn
-},
+    {
+        name: "Jupiter",
+        radius: 12,
+        distance: 145,
+        speed: 0.009,
+        texture: textures.jupiter
+    },
 
-{
-name:"Uranus",
-radius:5,
-distance:.78,
-speed:.002,
-texture:textures.uranus
-},
+    {
+        name: "Saturn",
+        radius: 10,
+        distance: 195,
+        speed: 0.007,
+        texture: textures.saturn
+    },
 
-{
-name:"Neptune",
-radius:5,
-distance:.94,
-speed:.0015,
-texture:textures.neptune
-}
+    {
+        name: "Uranus",
+        radius: 7,
+        distance: 240,
+        speed: 0.005,
+        texture: textures.uranus
+    },
+
+    {
+        name: "Neptune",
+        radius: 7,
+        distance: 285,
+        speed: 0.004,
+        texture: textures.neptune
+    }
 
 ];
 
-/* =====================================================
-   RESPONSIVE SCALE
-===================================================== */
 
-let MAX_RADIUS;
-
-function computeRadius(){
-
-MAX_RADIUS=Math.min(
-container.clientWidth,
-container.clientHeight
-)*0.9;
-
-}
-
-computeRadius();
-
-/* =====================================================
+/* =========================================================
    SUN
-===================================================== */
+   ========================================================= */
 
-const sun=new THREE.Mesh(
+const sunGeometry =
+    new THREE.SphereGeometry(
+        18,
+        64,
+        64
+    );
 
-new THREE.SphereGeometry(16,64,64),
+const sunMaterial =
+    new THREE.MeshBasicMaterial({
+        map: textures.sun
+    });
 
-new THREE.MeshBasicMaterial({
-
-map:textures.sun
-
-})
-
-);
+const sun =
+    new THREE.Mesh(
+        sunGeometry,
+        sunMaterial
+    );
 
 scene.add(sun);
 
-const glow=new THREE.Mesh(
 
-new THREE.SphereGeometry(19,64,64),
+/* =========================================================
+   SOLAR SYSTEM
+   ========================================================= */
 
-new THREE.MeshBasicMaterial({
+const solar = [];
 
-color:0xffaa33,
 
-transparent:true,
+PLANETS.forEach((planetInfo) => {
 
-opacity:.35,
+    const geometry =
+        new THREE.SphereGeometry(
+            planetInfo.radius,
+            48,
+            48
+        );
 
-side:THREE.BackSide,
+    const material =
+        new THREE.MeshStandardMaterial({
+            map: planetInfo.texture,
+            roughness: 0.8,
+            metalness: 0.05
+        });
 
-blending:THREE.AdditiveBlending
+    const mesh =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
 
-})
+    mesh.position.x =
+        planetInfo.distance;
 
-);
+    mesh.userData = {
+        ...planetInfo
+    };
 
-scene.add(glow);
+    scene.add(mesh);
 
-/* =====================================================
-   STARS
-===================================================== */
 
-const starGeo=new THREE.BufferGeometry();
+    /* ==============================================
+       ORBIT LINE
+       ============================================== */
 
-const verts=[];
+    const orbitPoints = [];
 
-for(let i=0;i<6000;i++){
+    const segments = 128;
 
-verts.push(
+    for (let i = 0; i <= segments; i++) {
 
-THREE.MathUtils.randFloatSpread(5000),
+        const angle =
+            (i / segments) *
+            Math.PI *
+            2;
 
-THREE.MathUtils.randFloatSpread(5000),
+        orbitPoints.push(
+            new THREE.Vector3(
+                Math.cos(angle) *
+                    planetInfo.distance,
 
-THREE.MathUtils.randFloatSpread(5000)
+                0,
 
-);
-
-}
-
-starGeo.setAttribute(
-
-"position",
-
-new THREE.Float32BufferAttribute(verts,3)
-
-);
-
-const stars=new THREE.Points(
-
-starGeo,
-
-new THREE.PointsMaterial({
-
-color:0xffffff,
-
-size:1.3
-
-})
-
-);
-
-scene.add(stars);
-
-/* =====================================================
-   PLANETS
-===================================================== */
-
-const solar=[];
-
-function createOrbit(radius){
-
-const curve=new THREE.EllipseCurve(
-0,
-0,
-radius,
-radius
-);
-
-const pts=curve.getPoints(250);
-
-const geo=new THREE.BufferGeometry().setFromPoints(
-
-pts.map(p=>new THREE.Vector3(p.x,0,p.y))
-
-);
-
-const orbit=new THREE.LineLoop(
-
-geo,
-
-new THREE.LineBasicMaterial({
-
-color:0x3daeff,
-
-transparent:true,
-
-opacity:.35
-
-})
-
-);
-
-scene.add(orbit);
-
-}
-
-PLANETS.forEach(p=>{
-
-const orbitRadius=MAX_RADIUS*p.distance;
-
-createOrbit(orbitRadius);
-
-const pivot=new THREE.Group();
-
-scene.add(pivot);
-
-const material = new THREE.MeshStandardMaterial({
-
-    map: p.texture,
-
-    emissive: 0x000000,
-    emissiveIntensity: 0
-
-});
-
-const mesh = new THREE.Mesh(
-
-    new THREE.SphereGeometry(p.radius,40,40),
-
-    material
-
-);
-
-mesh.userData = p;
-
-mesh.position.x=orbitRadius;
-
-pivot.add(mesh);
-
-if(p.name==="Saturn"){
-
-const ring=new THREE.Mesh(
-
-new THREE.RingGeometry(
-
-p.radius*1.5,
-
-p.radius*2.5,
-
-128
-
-),
-
-new THREE.MeshBasicMaterial({
-
-map:textures.ring,
-
-transparent:true,
-
-side:THREE.DoubleSide
-
-})
-
-);
-
-ring.rotation.x=Math.PI/2;
-
-mesh.add(ring);
-
-}
-
-solar.push({
-
-mesh,
-
-pivot,
-
-speed:p.speed,
-
-info:p
-
-});
-
-});
-
-
-
-/* =====================================================
-   RESPONSIVE
-===================================================== */
-
-function rebuild(){
-
-scene.children
-.filter(x=>x.type==="LineLoop")
-.forEach(x=>scene.remove(x));
-
-solar.forEach((planet,i)=>{
-
-const r=MAX_RADIUS*PLANETS[i].distance;
-
-planet.mesh.position.x=r;
-
-createOrbit(r);
-
-});
-
-}
-
-window.addEventListener("resize",()=>{
-
-renderer.setSize(
-container.clientWidth,
-container.clientHeight
-);
-
-camera.aspect=
-container.clientWidth/
-container.clientHeight;
-
-camera.updateProjectionMatrix();
-
-computeRadius();
-
-rebuild();
-
-});
-
-renderer.domElement.addEventListener("click", onPlanetClick);
-
-function onPlanetClick(event){
-
-    const rect = renderer.domElement.getBoundingClientRect();
-
-    mouse.x =
-        ((event.clientX - rect.left) / rect.width) * 2 - 1;
-
-    mouse.y =
-        -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-    raycaster.setFromCamera(mouse,camera);
-
-    const objects = solar.map(p=>p.mesh);
-
-    const hit = raycaster.intersectObjects(objects);
-
-    console.log(hit);
-
-if(hit.length>0){
-
-    console.log("Planet clicked:", hit[0].object.userData.name);
-
-    selectPlanet(hit[0].object);
-
-}
-}
-let glowTimeout = null;
-
-function selectPlanet(mesh){
-
-    // Cancel previous timer
-    if(glowTimeout){
-
-        clearTimeout(glowTimeout);
-
+                Math.sin(angle) *
+                    planetInfo.distance
+            )
+        );
     }
 
-    // Remove previous glow
-    if(selectedPlanet){
+    const orbitGeometry =
+        new THREE.BufferGeometry()
+            .setFromPoints(
+                orbitPoints
+            );
 
-        selectedPlanet.material.emissive.set(0x000000);
+    const orbitMaterial =
+        new THREE.LineBasicMaterial({
+            color: 0x075d70,
+            transparent: true,
+            opacity: 0.45
+        });
+
+    const orbit =
+        new THREE.Line(
+            orbitGeometry,
+            orbitMaterial
+        );
+
+    scene.add(orbit);
+
+
+    /* ==============================================
+       SATURN RINGS
+       ============================================== */
+
+    if (planetInfo.name === "Saturn") {
+
+        const ringGeometry =
+            new THREE.RingGeometry(
+                planetInfo.radius * 1.25,
+                planetInfo.radius * 2,
+                96
+            );
+
+        const ringMaterial =
+            new THREE.MeshBasicMaterial({
+                map: textures.ring,
+                transparent: true,
+                side: THREE.DoubleSide,
+                opacity: 0.9
+            });
+
+        const ring =
+            new THREE.Mesh(
+                ringGeometry,
+                ringMaterial
+            );
+
+        ring.rotation.x =
+            Math.PI / 2.6;
+
+        mesh.add(ring);
+
+        mesh.userData.ring = ring;
+    }
+
+
+    solar.push({
+        mesh,
+        info: planetInfo,
+        angle: Math.random() * Math.PI * 2
+    });
+
+});
+
+
+/* =========================================================
+   PLANET HOLOGRAM PREVIEW
+   ========================================================= */
+
+const previewContainer =
+    document.getElementById(
+        "planet-preview-container"
+    );
+
+const previewName =
+    document.getElementById(
+        "previewPlanetName"
+    );
+
+
+const previewScene =
+    new THREE.Scene();
+
+previewScene.background =
+    new THREE.Color(0x020914);
+
+
+const previewCamera =
+    new THREE.PerspectiveCamera(
+        38,
+        previewContainer.clientWidth /
+            previewContainer.clientHeight,
+        0.1,
+        100
+    );
+
+previewCamera.position.set(
+    0,
+    0,
+    5.2
+);
+
+
+/* =========================================================
+   PREVIEW RENDERER
+   ========================================================= */
+
+const previewRenderer =
+    new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true
+    });
+
+previewRenderer.setPixelRatio(
+    Math.min(window.devicePixelRatio, 2)
+);
+
+previewRenderer.setSize(
+    previewContainer.clientWidth,
+    previewContainer.clientHeight
+);
+
+previewRenderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+previewContainer.appendChild(
+    previewRenderer.domElement
+);
+
+
+/* =========================================================
+   PREVIEW LIGHTING
+   ========================================================= */
+
+previewScene.add(
+    new THREE.AmbientLight(
+        0xb8eaff,
+        1.25
+    )
+);
+
+
+const previewKeyLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2.2
+    );
+
+previewKeyLight.position.set(
+    -3,
+    2,
+    4
+);
+
+previewScene.add(
+    previewKeyLight
+);
+
+
+const previewRimLight =
+    new THREE.PointLight(
+        0x00cfff,
+        8,
+        20
+    );
+
+previewRimLight.position.set(
+    3,
+    -1,
+    2
+);
+
+previewScene.add(
+    previewRimLight
+);
+
+
+/* =========================================================
+   PREVIEW PLANET
+   ========================================================= */
+
+const previewPlanetMaterial =
+    new THREE.MeshStandardMaterial({
+        map: textures.earth,
+        roughness: 0.88,
+        metalness: 0.02
+    });
+
+
+const previewPlanet =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            1.45,
+            64,
+            64
+        ),
+        previewPlanetMaterial
+    );
+
+previewScene.add(
+    previewPlanet
+);
+
+
+/* =========================================================
+   PREVIEW SATURN RING
+   ========================================================= */
+
+const previewSaturnRing =
+    new THREE.Mesh(
+        new THREE.RingGeometry(
+            1.75,
+            2.35,
+            96
+        ),
+
+        new THREE.MeshBasicMaterial({
+            map: textures.ring,
+            transparent: true,
+            side: THREE.DoubleSide,
+            opacity: 0.9
+        })
+    );
+
+previewSaturnRing.rotation.x =
+    Math.PI / 2.6;
+
+previewSaturnRing.visible = false;
+
+previewPlanet.add(
+    previewSaturnRing
+);
+
+
+/* =========================================================
+   UPDATE PLANET PREVIEW
+   ========================================================= */
+
+function updatePlanetPreview(planet) {
+
+    if (!planet) return;
+
+    if (planet.texture) {
+
+        previewPlanetMaterial.map =
+            planet.texture;
+
+        previewPlanetMaterial.needsUpdate =
+            true;
+    }
+
+    previewSaturnRing.visible =
+        planet.name === "Saturn";
+
+    previewName.textContent =
+        planet.name.toUpperCase();
+}
+
+
+/* Start with Earth */
+
+updatePlanetPreview(
+    PLANETS.find(
+        planet =>
+            planet.name === "Earth"
+    )
+);
+
+
+/* =========================================================
+   RESIZE PLANET PREVIEW
+   ========================================================= */
+
+function resizePlanetPreview() {
+
+    const width =
+        previewContainer.clientWidth;
+
+    const height =
+        previewContainer.clientHeight;
+
+    if (!width || !height) return;
+
+    previewCamera.aspect =
+        width / height;
+
+    previewCamera.updateProjectionMatrix();
+
+    previewRenderer.setSize(
+        width,
+        height
+    );
+}
+
+
+/* =========================================================
+   PLANET SELECTION
+   ========================================================= */
+
+let selectedPlanet = null;
+
+
+function selectPlanet(mesh) {
+
+    if (!mesh) return;
+
+
+    /* Remove previous glow */
+
+    if (selectedPlanet) {
+
+        selectedPlanet.material.emissive
+            ?.setHex(0x000000);
+
         selectedPlanet.material.emissiveIntensity = 0;
-
     }
+
 
     selectedPlanet = mesh;
 
-    mesh.material.emissive.set(0x00ffff);
-    mesh.material.emissiveIntensity = 2;
 
-    updateDatabase(mesh.userData);
+    /* Glow */
 
-    glowTimeout = setTimeout(()=>{
+    if (mesh.material) {
 
-        if(selectedPlanet===mesh){
+        if (
+            "emissive" in
+            mesh.material
+        ) {
 
-            mesh.material.emissive.set(0x000000);
-            mesh.material.emissiveIntensity=0;
+            mesh.material.emissive =
+                new THREE.Color(
+                    0x00d9ff
+                );
 
-            selectedPlanet=null;
-
+            mesh.material.emissiveIntensity =
+                0.8;
         }
-
-    },3000);
-
-}
-
-/* =====================================================
-   ANIMATION
-===================================================== */
-
-function animate(){
-
-requestAnimationFrame(animate);
-
-controls.update();
-
-sun.rotation.y+=.000;
-
-glow.position.copy(sun.position);
-
-glow.rotation.y+=.000;
-
-stars.rotation.y+=.00000;
-
-if(!isPaused){
-
-    solar.forEach(p=>{
-
-        p.pivot.rotation.y +=
-            p.speed * simulationSpeed;
-
-        p.mesh.rotation.y +=
-            0.01 * simulationSpeed;
-
-    });
-
-}
-if(!isPaused){
-
-    simulationSeconds += simulationSpeed / 60;
-
-}
-
-const hrs =
-Math.floor(simulationSeconds / 3600);
-
-const mins =
-Math.floor(simulationSeconds % 3600 / 60);
-
-const secs =
-Math.floor(simulationSeconds % 60);
-
-document.getElementById("simTime").textContent =
-`${String(hrs).padStart(2,"0")}:${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
-renderer.render(scene,camera);
-
-}
-
-animate();
-
-/* =====================================================
-   SIMULATION CONTROLS
-===================================================== */
-
-document.getElementById("pauseBtn").onclick = () => {
-
-    isPaused = true;
-
-    document.getElementById("simStatus").textContent =
-        "⏸ PAUSED";
-
-};
-
-document.getElementById("playBtn").onclick = () => {
-
-    isPaused = false;
-
-    document.getElementById("simStatus").textContent =
-        "▶ RUNNING";
-
-};
-
-const slider =
-document.getElementById("speedSlider");
-
-const speedText =
-document.getElementById("speedDisplay");
-
-slider.addEventListener("input",()=>{
-
-    simulationSpeed =
-        Number(slider.value);
-
-    speedText.textContent =
-simulationSpeed.toFixed(1)+"×";
-
-});
-
-let currentPlanet = null;
-
-function updateDatabase(planet){
-
-    // Your JSON is an OBJECT, not an array
-    const data = PLANET_DATABASE[
-        planet.name.toLowerCase()
-    ];
-
-    const info = document.getElementById("planetInfo");
-
-    if(!data){
-
-        info.innerHTML = `
-            <h2>${planet.name}</h2>
-            <p>No database found.</p>
-        `;
-
-        return;
     }
 
-    currentPlanet = data;
 
-    info.innerHTML = `
+    updateDatabase(
+        mesh.userData
+    );
 
-        <h2>${data.name}</h2>
 
-        <p><b>Type</b></p>
-        <p>${data.type}</p>
+    updatePlanetPreview(
+        mesh.userData
+    );
 
-        <p><b>Radius</b></p>
-        <p>${data.radius}</p>
 
-        <p><b>Mass</b></p>
-        <p>${data.mass}</p>
+    /* Camera target */
 
-        <p><b>Gravity</b></p>
-        <p>${data.gravity}</p>
+    controls.target.copy(
+        mesh.position
+    );
 
-        <p><b>Rotation</b></p>
-        <p>${data.rotation}</p>
 
-        <p><b>Revolution</b></p>
-        <p>${data.revolution}</p>
+    setTimeout(() => {
 
-        <button id="openDatabaseBtn">
-            OPEN DATABASE
-        </button>
+        if (
+            selectedPlanet === mesh &&
+            mesh.material &&
+            "emissiveIntensity" in
+            mesh.material
+        ) {
+
+            mesh.material.emissiveIntensity =
+                0;
+        }
+
+    }, 3000);
+}
+
+
+/* =========================================================
+   DATABASE
+   ========================================================= */
+
+function updateDatabase(planet) {
+
+    const planetInfo =
+        document.getElementById(
+            "planetInfo"
+        );
+
+    if (!planetInfo || !planet) return;
+
+
+    planetInfo.innerHTML = `
+
+        <h2>${planet.name.toUpperCase()}</h2>
+
+        <p>
+            <strong>Distance:</strong>
+            ${planet.distance}
+        </p>
+
+        <p>
+            <strong>Orbital Speed:</strong>
+            ${planet.speed}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            ONLINE
+        </p>
+
+        <p>
+            <strong>Target:</strong>
+            LOCKED
+        </p>
 
     `;
-
-    document
-        .getElementById("openDatabaseBtn")
-        .onclick = openPlanetDatabase;
-
 }
-function openPlanetDatabase(){
 
-alert(
 
-"IRON MAN DATABASE\n\n"+
+/* =========================================================
+   MOUSE CLICK PLANET DETECTION
+   ========================================================= */
 
-currentPlanet.name+
+const raycaster =
+    new THREE.Raycaster();
 
-"\n\nComing in next step."
+const mouse =
+    new THREE.Vector2();
 
+
+renderer.domElement.addEventListener(
+    "click",
+    (event) => {
+
+        const rect =
+            renderer.domElement.getBoundingClientRect();
+
+        mouse.x =
+            ((event.clientX - rect.left) /
+                rect.width) *
+                2 -
+            1;
+
+        mouse.y =
+            -(
+                (event.clientY - rect.top) /
+                    rect.height
+            ) *
+                2 +
+            1;
+
+
+        raycaster.setFromCamera(
+            mouse,
+            camera
+        );
+
+
+        const meshes =
+            solar.map(
+                planet =>
+                    planet.mesh
+            );
+
+
+        const intersections =
+            raycaster.intersectObjects(
+                meshes
+            );
+
+
+        if (
+            intersections.length > 0
+        ) {
+
+            selectPlanet(
+                intersections[0].object
+            );
+        }
+
+    }
 );
 
-}
 
-/* =====================================================
-   PLANET NAVIGATION
-===================================================== */
+/* =========================================================
+   PLANET SELECTOR
+   ========================================================= */
 
 const planetsBtn =
-    document.getElementById("planetsBtn");
+    document.getElementById(
+        "planetsBtn"
+    );
 
 const planetSelector =
-    document.getElementById("planetSelector");
+    document.getElementById(
+        "planetSelector"
+    );
 
 const closePlanetSelector =
-    document.getElementById("closePlanetSelector");
+    document.getElementById(
+        "closePlanetSelector"
+    );
 
 
-/* OPEN PLANET LIST */
+/* Open selector */
 
-planetsBtn.addEventListener("click", () => {
+planetsBtn.addEventListener(
+    "click",
+    () => {
 
-    planetSelector.style.display = "block";
+        const isOpen =
+            planetSelector.style.display ===
+            "block";
 
-});
+        planetSelector.style.display =
+            isOpen
+                ? "none"
+                : "block";
+
+        planetsBtn.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+        );
+    }
+);
 
 
-/* CLOSE PLANET LIST */
+/* Close selector */
 
-closePlanetSelector.addEventListener("click", () => {
+closePlanetSelector.addEventListener(
+    "click",
+    () => {
 
-    planetSelector.style.display = "none";
+        planetSelector.style.display =
+            "none";
 
-});
-/* =====================================================
-   PLANET LIST SELECTION
-===================================================== */
+        planetsBtn.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+);
+
+
+/* Planet buttons */
 
 document
-    .querySelectorAll("#planetList button")
+    .querySelectorAll(
+        "#planetList button"
+    )
     .forEach(button => {
 
-        button.addEventListener("click", () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-            const planetName =
-                button.dataset.planet;
+                const planetName =
+                    button.dataset.planet;
 
-            const planet =
-                solar.find(
-                    p => p.info.name === planetName
+                const planet =
+                    solar.find(
+                        p =>
+                            p.info.name ===
+                            planetName
+                    );
+
+
+                if (!planet) return;
+
+
+                selectPlanet(
+                    planet.mesh
                 );
 
-            if(!planet){
 
-                console.warn(
-                    "Planet not found:",
-                    planetName
+                planetSelector.style.display =
+                    "none";
+
+                planetsBtn.setAttribute(
+                    "aria-expanded",
+                    "false"
                 );
-
-                return;
-
             }
-
-            selectPlanet(planet.mesh);
-
-            planetSelector.style.display = "none";
-
-        });
+        );
 
     });
-    
-;
+
+
+/* =========================================================
+   SIMULATION CONTROLS
+   ========================================================= */
+
+let isPaused = false;
+
+let simulationSpeed = 1;
+
+
+const speedSlider =
+    document.getElementById(
+        "speedSlider"
+    );
+
+const speedDisplay =
+    document.getElementById(
+        "speedDisplay"
+    );
+
+
+speedSlider.addEventListener(
+    "input",
+    () => {
+
+        simulationSpeed =
+            Number(
+                speedSlider.value
+            );
+
+        speedDisplay.textContent =
+            simulationSpeed.toFixed(1) +
+            "×";
+    }
+);
+
+
+/* PLAY */
+
+document.getElementById(
+    "playBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        isPaused = false;
+    }
+);
+
+
+/* PAUSE */
+
+document.getElementById(
+    "pauseBtn"
+).addEventListener(
+    "click",
+    () => {
+
+        isPaused = true;
+    }
+);
+
+
+/* =========================================================
+   SIMULATION TIME
+   ========================================================= */
+
+let simulationTime = 0;
+
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
+const clockElement =
+    document.getElementById(
+        "clock"
+    );
+
+
+function updateClock() {
+
+    const now =
+        new Date();
+
+    const hours =
+        String(
+            now.getHours()
+        ).padStart(2, "0");
+
+    const minutes =
+        String(
+            now.getMinutes()
+        ).padStart(2, "0");
+
+    const seconds =
+        String(
+            now.getSeconds()
+        ).padStart(2, "0");
+
+    clockElement.textContent =
+        `${hours}:${minutes}:${seconds}`;
+}
+
+
+/* =========================================================
+   FPS
+   ========================================================= */
+
+const fpsLabel =
+    document.getElementById(
+        "fpsLabel"
+    );
+
+let lastFPSUpdate = performance.now();
+
+let frameCounter = 0;
+
+
+/* =========================================================
+   RESIZE
+   ========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        /* Main */
+
+        const width =
+            canvasContainer.clientWidth;
+
+        const height =
+            canvasContainer.clientHeight;
+
+        camera.aspect =
+            width / height;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            width,
+            height
+        );
+
+
+        /* Preview */
+
+        resizePlanetPreview();
+    }
+);
+
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+const animationClock =
+    new THREE.Clock();
+
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    const delta =
+        animationClock.getDelta();
+
+
+    /* ==============================================
+       SOLAR SYSTEM
+       ============================================== */
+
+    if (!isPaused) {
+
+        simulationTime +=
+            delta *
+            simulationSpeed;
+
+
+        solar.forEach(
+            planet => {
+
+                planet.angle +=
+                    planet.info.speed *
+                    simulationSpeed;
+
+
+                planet.mesh.position.x =
+                    Math.cos(
+                        planet.angle
+                    ) *
+                    planet.info.distance;
+
+
+                planet.mesh.position.z =
+                    Math.sin(
+                        planet.angle
+                    ) *
+                    planet.info.distance;
+
+
+                planet.mesh.rotation.y +=
+                    0.01 *
+                    simulationSpeed;
+            }
+        );
+
+
+        sun.rotation.y +=
+            0.002 *
+            simulationSpeed;
+
+
+        stars.rotation.y +=
+            0.00005 *
+            simulationSpeed;
+    }
+
+
+    /* ==============================================
+       PLANET HOLOGRAM ROTATION
+       ============================================== */
+
+    if (!isPaused) {
+
+        previewPlanet.rotation.y +=
+            0.006 *
+            Math.max(
+                0.35,
+                Math.min(
+                    simulationSpeed,
+                    3
+                )
+            );
+    }
+
+
+    /* ==============================================
+       RENDER
+       ============================================== */
+
+    controls.update();
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+    previewRenderer.render(
+        previewScene,
+        previewCamera
+    );
+
+
+    /* ==============================================
+       SIMULATION TIME DISPLAY
+       ============================================== */
+
+    const totalSeconds =
+        Math.floor(
+            simulationTime
+        );
+
+    const hours =
+        Math.floor(
+            totalSeconds / 3600
+        );
+
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) /
+            60
+        );
+
+    const seconds =
+        totalSeconds % 60;
+
+
+    document.getElementById(
+        "simTime"
+    ).textContent =
+        `${String(hours).padStart(2, "0")}:` +
+        `${String(minutes).padStart(2, "0")}:` +
+        `${String(seconds).padStart(2, "0")}`;
+
+
+    /* ==============================================
+       FPS
+       ============================================== */
+
+    frameCounter++;
+
+    const now =
+        performance.now();
+
+    if (
+        now - lastFPSUpdate >=
+        1000
+    ) {
+
+        fpsLabel.textContent =
+            `FPS ${frameCounter}`;
+
+        frameCounter = 0;
+
+        lastFPSUpdate = now;
+    }
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+resizePlanetPreview();
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+animate();
