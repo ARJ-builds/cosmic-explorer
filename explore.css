@@ -1,800 +1,862 @@
-/* ===========================
-   RESET
-=========================== */
+/* ================================
+   COSMIC EXPLORER — SCI-FI HUD
+   ================================ */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 html,
-body{
-
-    width:100%;
-    height:100%;
-    overflow:hidden;
-
-    background:#020811;
-
-    color:white;
-
-    font-family:"Rajdhani",sans-serif;
-
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-/* ===========================
-BACKGROUND
-=========================== */
+body {
+    background: #01040a;
+    color: #dffaff;
+    font-family: "Rajdhani", sans-serif;
+}
 
-body{
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* ================================
+   APP
+   ================================ */
+
+#app {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 70px 1fr 100px;
+    background:
+        radial-gradient(circle at 50% 45%, rgba(0, 180, 255, 0.045), transparent 38%),
+        #01040a;
+}
+
+/* ================================
+   TOP BAR
+   ================================ */
+
+#topBar {
+    position: relative;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 24px;
+
+    border-bottom: 1px solid rgba(0, 220, 255, 0.3);
 
     background:
-        radial-gradient(circle at center,#0a1628 0%,#020811 70%);
-
-}
-
-/* ===========================
-APP
-=========================== */
-
-#app{
-
-    width:100%;
-    height:100%;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:14px;
-    padding:14px;
-
-}
-
-/* ===========================
-COMMON PANEL
-=========================== */
-
-#topBar,
-#leftPanel,
-#viewer,
-#rightPanel,
-#bottomBar,
-#planetDock{
-
-    position:relative;
-
-    background:rgba(5,15,28,.55);
-
-    backdrop-filter:blur(18px);
-
-    border:1px solid rgba(0,230,255,.25);
+        linear-gradient(
+            90deg,
+            rgba(0, 20, 32, 0.96),
+            rgba(2, 8, 16, 0.96)
+        );
 
     box-shadow:
-        0 0 15px rgba(0,230,255,.12),
-        inset 0 0 25px rgba(0,255,255,.03);
-
-    overflow:visible;
-
+        0 0 25px rgba(0, 200, 255, 0.08);
 }
 
-/* ===========================
-HUD CORNERS
-=========================== */
-
-#topBar::before,
-#leftPanel::before,
-#viewer::before,
-#rightPanel::before,
-#bottomBar::before,
-#planetDock::before{
-
-    content:"";
-
-    position:absolute;
-
-    left:0;
-    top:0;
-
-    width:38px;
-    height:38px;
-
-    border-top:2px solid #00e5ff;
-    border-left:2px solid #00e5ff;
-
-}
-
-#topBar::after,
-#leftPanel::after,
-#viewer::after,
-#rightPanel::after,
-#bottomBar::after,
-#planetDock::after{
-
-    content:"";
-
-    position:absolute;
-
-    right:0;
-    bottom:0;
-
-    width:38px;
-    height:38px;
-
-    border-right:2px solid #00e5ff;
-    border-bottom:2px solid #00e5ff;
-
-}
-
-/* ===========================
-SCAN LINE
-=========================== */
-
-.scan{
-
-    position:absolute;
-
-    inset:0;
-
-    overflow:hidden;
-
-    pointer-events:none;
-
-}
-
-.scan::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-    left:-40%;
-
-    width:35%;
-    height:100%;
-
-    background:
-    linear-gradient(
-        90deg,
-        transparent,
-        rgba(0,255,255,.15),
-        transparent
-    );
-
-    animation:scanMove 7s linear infinite;
-
-}
-
-@keyframes scanMove{
-
-    from{
-
-        left:-40%;
-
-    }
-
-    to{
-
-        left:140%;
-
-    }
-
-}
-
-/* ===========================
-TOP BAR
-=========================== */
-
-#topBar{
-
-    height:72px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:0 30px;
-
-}
-
-.logo{
-
-    font-family:"Orbitron",sans-serif;
-
-    letter-spacing:4px;
-
-    font-size:28px;
-
-    color:#77eeff;
-
-    text-shadow:
-        0 0 8px cyan;
-
-}
-
-.status{
-
-    display:flex;
-
-    gap:30px;
-
-    color:#8deeff;
-
-}
-
-/* ===========================
-WORKSPACE
-=========================== */
-
-#workspace{
-
-    flex:1;
-
-    display:grid;
-
-    grid-template-columns:
-
-        250px
-        1fr
-        320px;
-
-    gap:14px;
-
-    min-height:0;
-
-}
-
-/* ===========================
-LEFT PANEL
-=========================== */
-
-#leftPanel{
-
-    display:flex;
-
-    flex-direction:column;
-
-    padding:22px;
-
-    gap:14px;
-
-}
-
-#leftPanel h2{
-
-    font-family:"Orbitron";
-
-    color:#7feeff;
-
-    margin-bottom:12px;
-
-    letter-spacing:2px;
-
-}
-
-#leftPanel button{
-
-    background:#07131d;
-
-    border:1px solid rgba(0,255,255,.3);
-
-    color:#bdfbff;
-
-    padding:15px;
-
-    cursor:pointer;
-
-    font-size:16px;
-
-    transition:.25s;
-
-}
-
-#leftPanel button:hover{
-
-    transform:translateX(8px);
-
-    background:#00d9ff;
-
-    color:#04131c;
-
-    box-shadow:
-        0 0 20px cyan;
-
-}
-
-/* ===========================
-VIEWER
-=========================== */
-
-#viewer{
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-}
-
-#canvas-container{
-
-    width:100%;
-    height:100%;
-
-}
-
-/* ===========================
-RIGHT PANEL
-=========================== */
-
-#rightPanel{
-
-    display:flex;
-
-    flex-direction:column;
-
-    padding:22px;
-
-    min-height:0;
-
-}
-
-#rightPanel h2{
-
-    font-family:"Orbitron";
-
-    color:#7feeff;
-
-    margin-bottom:20px;
-
-}
-
-#planetInfo{
-
-    flex:1;
-
-    min-height:0;
-
-    overflow-y:auto;
-
-    overflow-x:hidden;
-
-    color:#d4f9ff;
-
-    line-height:1.8;
-
-    padding-right:8px;
-
-}
-
-/* ===========================
-BOTTOM BAR
-=========================== */
-
-#bottomBar{
-
-    height:70px;
-
-    display:flex;
-
-    gap:12px;
-
-}
-
-.control{
-
-    flex:1;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    font-family:"Orbitron";
-
-    color:#7deeff;
-
-}
-
-/* ===========================
-PLANET DOCK
-=========================== */
-
-#planetDock{
-
-    height:75px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    gap:18px;
-
-    flex-wrap:wrap;
-
-}
-
-#planetDock button{
-
-    width:55px;
-    height:55px;
-
-    border-radius:50%;
-
-    border:1px solid rgba(0,255,255,.4);
-
-    background:#07131d;
-
-    color:#9ef8ff;
-
-    cursor:pointer;
-
-    font-size:24px;
-
-    transition:.3s;
-
-}
-
-#planetDock button:hover{
-
-    transform:translateY(-6px) scale(1.1);
-
-    background:#00d9ff;
-
-    color:#021018;
-
-    box-shadow:
-        0 0 20px cyan;
-
-}
-
-/* ===========================
-RESPONSIVE
-=========================== */
-
-@media(max-width:1200px){
-
-    #workspace{
-
-        grid-template-columns:
-            210px
-            1fr
-            260px;
-
-    }
-
-}
-
-@media(max-width:900px){
-
-    #workspace{
-
-        grid-template-columns:1fr;
-
-        grid-template-rows:
-            170px
-            1fr
-            220px;
-
-    }
-
-    #planetDock{
-
-        height:auto;
-
-        padding:12px;
-
-    }
-
-}
-
-/* =====================================
-BOTTOM BAR
-===================================== */
-
-#bottomBar{
-
-display:grid;
-
-grid-template-columns:1fr 1fr 1.6fr;
-
-align-items:center;
-
-padding:15px 20px;
-
-gap:20px;
-
-min-height:150px;
-
-}
-
-.control{
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:center;
-
-align-items:center;
-
-font-family:"Orbitron";
-
-}
-
-.control h3{
-
-font-size:14px;
-
-letter-spacing:2px;
-
-color:#66ffff;
-
-margin-bottom:6px;
-
-}
-
-.control p{
-
-font-size:18px;
-
-color:white;
-
-}
-
-/* =====================================
-SPEED PANEL
-===================================== */
-
-#speedDisplay{
-
-font-size:22px;
-
-margin-bottom:8px;
-
-}
-
-#speedSlider{
-
-width:100%;
-
-appearance:none;
-
-height:6px;
-
-border-radius:20px;
-
-background:#09333d;
-
-outline:none;
-
-margin-bottom:12px;
-
-}
-
-#speedSlider::-webkit-slider-thumb{
-
-appearance:none;
-
-width:18px;
-
-height:18px;
-
-border-radius:50%;
-
-background:#00ffff;
-
-box-shadow:0 0 12px cyan;
-
-cursor:pointer;
-
-}
-
-.control div{
-
-display:flex;
-
-gap:12px;
-
-}
-
-.control button{
-
-width:46px;
-
-height:46px;
-
-border-radius:8px;
-
-background:#07131d;
-
-border:1px solid cyan;
-
-color:#7efcff;
-
-font-size:20px;
-
-cursor:pointer;
-
-transition:.25s;
-
-}
-
-.control button:hover{
-
-background:#00d9ff;
-
-color:black;
-
-box-shadow:0 0 20px cyan;
-
-}
-
-@media (max-width:1000px){
-
-    #bottomBar{
-
-        grid-template-columns:1fr;
-
-        gap:20px;
-
-        min-height:auto;
-
-        padding:20px;
-
-    }
-
-}
-
-#openDatabaseBtn{
-
-margin-top:20px;
-
-width:100%;
-
-padding:12px;
-
-background:#021c27;
-
-border:1px solid cyan;
-
-color:#8efcff;
-
-font-family:"Orbitron";
-
-cursor:pointer;
-
-transition:.25s;
-
-}
-
-#openDatabaseBtn:hover{
-
-background:cyan;
-
-color:black;
-
-box-shadow:0 0 20px cyan;
-
-}
 .logo-link {
     text-decoration: none;
+    color: inherit;
 }
-/* =====================================
-   PLANET SELECTOR
-===================================== */
 
-#planetSelector{
-    position:absolute;
+.logo {
+    font-family: "Orbitron", sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
 
-    top:20px;
-    left:20px;
+    color: #e8fbff;
 
-    width:230px;
-    max-height:80vh;
+    text-shadow:
+        0 0 8px rgba(0, 220, 255, 0.65),
+        0 0 20px rgba(0, 150, 255, 0.25);
+}
 
-    padding:16px;
+/* ================================
+   TOP ACTIONS
+   ================================ */
 
-    background:rgba(3,12,24,.92);
+.topActions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
 
-    backdrop-filter:blur(18px);
+.topPlanetsBtn {
+    min-width: 115px;
 
-    border:1px solid rgba(0,230,255,.4);
+    padding: 9px 15px;
+
+    border: 1px solid rgba(0, 220, 255, 0.55);
+    border-radius: 3px;
+
+    background: rgba(0, 30, 45, 0.75);
+
+    color: #bff6ff;
+
+    font-family: "Orbitron", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.topPlanetsBtn:hover,
+.topPlanetsBtn[aria-expanded="true"] {
+    background: rgba(0, 170, 220, 0.15);
 
     box-shadow:
-        0 0 20px rgba(0,230,255,.18),
-        inset 0 0 20px rgba(0,255,255,.04);
+        0 0 12px rgba(0, 220, 255, 0.25),
+        inset 0 0 10px rgba(0, 180, 255, 0.08);
 
-    z-index:9999;
-
-    display:none;
-
-    overflow:hidden;
+    transform: translateY(-1px);
 }
 
+.status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 
-/* HEADER */
+    font-family: "Orbitron", sans-serif;
+    font-size: 11px;
 
-.planetSelectorHeader{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    margin-bottom:14px;
-
-    font-family:"Orbitron";
-    color:#7feeff;
-    letter-spacing:2px;
-
-    flex-shrink:0;
+    color: #7dd9e8;
 }
 
+/* ================================
+   WORKSPACE
+   ================================ */
 
-/* PLANET LIST */
+#workspace {
+    min-height: 0;
 
-#planetList{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
+    display: grid;
 
-    max-height:calc(80vh - 90px);
+    grid-template-columns:
+        minmax(220px, 0.72fr)
+        minmax(0, 2.2fr)
+        minmax(280px, 0.92fr);
 
-    overflow-y:scroll;
-    overflow-x:hidden;
+    gap: 8px;
 
-    padding-right:8px;
+    padding: 8px;
+
+    background: #01050b;
 }
 
+/* ================================
+   COMMON PANELS
+   ================================ */
 
-/* PLANET BUTTONS */
+#leftPanel,
+#viewer,
+#rightPanel {
+    min-width: 0;
+    min-height: 0;
 
-#planetList button{
-    width:100%;
+    border: 1px solid rgba(0, 190, 230, 0.2);
 
-    padding:11px 12px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(5, 20, 31, 0.94),
+            rgba(1, 8, 15, 0.94)
+        );
 
-    flex-shrink:0;
-
-    text-align:left;
-
-    background:#07131d;
-
-    border:1px solid rgba(0,255,255,.2);
-
-    color:#bdfbff;
-
-    font-family:"Rajdhani";
-
-    font-size:16px;
-
-    cursor:pointer;
-
-    transition:.25s;
+    box-shadow:
+        inset 0 0 20px rgba(0, 160, 220, 0.025),
+        0 0 12px rgba(0, 150, 220, 0.035);
 }
 
+/* ================================
+   PLANET HOLOGRAM PANEL
+   ================================ */
 
-/* SCROLLBAR */
+#leftPanel {
+    display: flex;
+    flex-direction: column;
 
-#planetList::-webkit-scrollbar{
-    width:8px;
+    padding: 14px;
+
+    overflow: hidden;
 }
 
-#planetList::-webkit-scrollbar-track{
-    background:rgba(0,20,30,.7);
+.previewHeading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    height: 34px;
+
+    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+
+    margin-bottom: 8px;
 }
 
-#planetList::-webkit-scrollbar-thumb{
-    background:#00e5ff;
-    border-radius:10px;
+.previewHeading h2 {
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+
+    color: #a8efff;
 }
 
-#planetList::-webkit-scrollbar-thumb:hover{
-    background:#7fffff;
+.statusDot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #00d9ff;
+
+    box-shadow:
+        0 0 7px #00d9ff,
+        0 0 15px rgba(0, 217, 255, 0.6);
+
+    animation: statusPulse 1.8s infinite;
+}
+
+@keyframes statusPulse {
+    0%,
+    100% {
+        opacity: 0.45;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ================================
+   3D PLANET PREVIEW
+   ================================ */
+
+#planet-preview-container {
+    position: relative;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(0, 210, 255, 0.13);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0, 180, 255, 0.09),
+            transparent 62%
+        );
+
+    box-shadow:
+        inset 0 0 35px rgba(0, 170, 255, 0.08);
+}
+
+#planet-preview-container canvas {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+}
+
+/* ================================
+   HOLOGRAM RETICLES
+   ================================ */
+
+.previewReticle {
+    position: absolute;
+
+    pointer-events: none;
+
+    border: 1px solid rgba(0, 220, 255, 0.25);
+
+    z-index: 5;
+}
+
+.previewReticleOne {
+    inset: 18px;
+
+    border-radius: 50%;
+}
+
+.previewReticleTwo {
+    left: 10%;
+    right: 10%;
+    top: 50%;
+
+    height: 1px;
+
+    border: none;
+
+    background: rgba(0, 220, 255, 0.13);
+
+    box-shadow:
+        0 -1px 0 rgba(0, 220, 255, 0.04),
+        0 1px 0 rgba(0, 220, 255, 0.04);
+}
+
+.previewReticleTwo::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: -80px;
+
+    width: 1px;
+    height: 160px;
+
+    background: rgba(0, 220, 255, 0.13);
+}
+
+/* ================================
+   PREVIEW CAPTION
+   ================================ */
+
+.previewCaption {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+
+    padding: 10px 4px 2px;
+}
+
+.previewLabel {
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 8px;
+    letter-spacing: 2px;
+
+    color: #4d9bab;
+}
+
+#previewPlanetName {
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 19px;
+    letter-spacing: 3px;
+
+    color: #e8fbff;
+
+    text-shadow:
+        0 0 8px rgba(0, 220, 255, 0.5);
+}
+
+.previewHint {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+
+    color: #477c89;
+}
+
+/* ================================
+   MAIN VIEWER
+   ================================ */
+
+#viewer {
+    position: relative;
+
+    overflow: hidden;
+}
+
+#canvas-container {
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+}
+
+#canvas-container canvas {
+    display: block;
+}
+
+/* ================================
+   CROSSHAIR
+   ================================ */
+
+#crosshair {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 20px;
+    height: 20px;
+
+    transform: translate(-50%, -50%);
+
+    pointer-events: none;
+
+    opacity: 0.45;
+
+    z-index: 10;
+}
+
+#crosshair::before,
+#crosshair::after {
+    content: "";
+
+    position: absolute;
+
+    background: rgba(0, 220, 255, 0.6);
+}
+
+#crosshair::before {
+    left: 9px;
+    top: 0;
+
+    width: 1px;
+    height: 20px;
+}
+
+#crosshair::after {
+    left: 0;
+    top: 9px;
+
+    width: 20px;
+    height: 1px;
+}
+
+/* ================================
+   PLANET SELECTOR
+   ================================ */
+
+#planetSelector {
+    position: absolute;
+
+    top: 18px;
+    left: 18px;
+
+    width: 230px;
+
+    max-height: 80%;
+
+    padding: 14px;
+
+    border: 1px solid rgba(0, 220, 255, 0.45);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(2, 18, 29, 0.97),
+            rgba(1, 7, 13, 0.97)
+        );
+
+    box-shadow:
+        0 0 25px rgba(0, 190, 255, 0.13),
+        inset 0 0 20px rgba(0, 190, 255, 0.04);
+
+    z-index: 9999;
+
+    display: none;
+
+    overflow: hidden;
+}
+
+.planetSelectorHeader {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 10px;
+
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 11px;
+    letter-spacing: 2px;
+
+    color: #a9efff;
+}
+
+#closePlanetSelector {
+    width: 27px;
+    height: 27px;
+
+    border: 1px solid rgba(0, 220, 255, 0.25);
+
+    background: transparent;
+
+    color: #78dcec;
+
+    font-size: 20px;
+    line-height: 1;
+
+    transition: 0.2s;
+}
+
+#closePlanetSelector:hover {
+    color: white;
+
+    border-color: rgba(0, 220, 255, 0.65);
+
+    background: rgba(0, 200, 255, 0.08);
+}
+
+/* ================================
+   PLANET LIST
+   ================================ */
+
+#planetList {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    max-height: calc(80vh - 90px);
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 5px;
+}
+
+#planetList::-webkit-scrollbar {
+    width: 4px;
+}
+
+#planetList::-webkit-scrollbar-track {
+    background: rgba(0, 200, 255, 0.03);
+}
+
+#planetList::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.35);
+}
+
+#planetList button {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid rgba(0, 180, 220, 0.18);
+
+    background: rgba(0, 50, 70, 0.2);
+
+    color: #9edce7;
+
+    text-align: left;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 10px;
+    letter-spacing: 1px;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        padding-left 0.2s ease;
+}
+
+#planetList button:hover {
+    padding-left: 15px;
+
+    border-color: rgba(0, 220, 255, 0.6);
+
+    background: rgba(0, 190, 240, 0.1);
+
+    color: #eaffff;
+
+    box-shadow:
+        inset 3px 0 0 #00d9ff;
+}
+
+/* ================================
+   DATABASE PANEL
+   ================================ */
+
+#rightPanel {
+    padding: 16px;
+
+    overflow-y: auto;
+}
+
+#rightPanel > h2 {
+    padding-bottom: 10px;
+
+    margin-bottom: 15px;
+
+    border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 13px;
+    letter-spacing: 2px;
+
+    color: #a9efff;
+}
+
+#planetInfo {
+    color: #87aeb8;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#planetInfo h2 {
+    margin-bottom: 10px;
+
+    color: #e5fbff;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 14px;
+}
+
+#planetInfo p {
+    color: #6f9ba6;
+}
+
+/* ================================
+   BOTTOM BAR
+   ================================ */
+
+#bottomBar {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        1.5fr;
+
+    gap: 8px;
+
+    padding: 8px;
+
+    border-top: 1px solid rgba(0, 220, 255, 0.25);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(2, 13, 22, 0.98),
+            rgba(1, 7, 13, 0.98)
+        );
+}
+
+.control {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    padding: 8px 14px;
+
+    border: 1px solid rgba(0, 190, 230, 0.14);
+
+    background: rgba(0, 30, 45, 0.25);
+}
+
+.control h3 {
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 9px;
+    letter-spacing: 2px;
+
+    color: #4f8995;
+}
+
+.control p {
+    margin-top: 3px;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 13px;
+
+    color: #bcefff;
+}
+
+/* ================================
+   SPEED SLIDER
+   ================================ */
+
+#speedSlider {
+    width: 100%;
+
+    margin: 7px 0;
+
+    accent-color: #00cfff;
+
+    cursor: pointer;
+}
+
+.control button {
+    min-width: 38px;
+    height: 27px;
+
+    margin-right: 5px;
+
+    border: 1px solid rgba(0, 210, 255, 0.3);
+
+    background: rgba(0, 100, 130, 0.12);
+
+    color: #9eefff;
+
+    transition: 0.2s;
+}
+
+.control button:hover {
+    border-color: rgba(0, 220, 255, 0.7);
+
+    background: rgba(0, 210, 255, 0.12);
+
+    color: white;
+}
+
+/* ================================
+   SCROLLBARS
+   ================================ */
+
+#rightPanel::-webkit-scrollbar {
+    width: 4px;
+}
+
+#rightPanel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#rightPanel::-webkit-scrollbar-thumb {
+    background: rgba(0, 210, 255, 0.25);
+}
+
+/* ================================
+   RESPONSIVE
+   ================================ */
+
+@media (max-width: 1000px) {
+
+    #workspace {
+        grid-template-columns:
+            minmax(190px, 0.65fr)
+            minmax(0, 2fr)
+            minmax(240px, 0.85fr);
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .topActions {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 760px) {
+
+    #app {
+        grid-template-rows: 60px 1fr 90px;
+    }
+
+    #workspace {
+        grid-template-columns:
+            170px
+            minmax(0, 1fr)
+            210px;
+    }
+
+    #topBar {
+        padding: 0 14px;
+    }
+
+    .logo {
+        font-size: 15px;
+        letter-spacing: 2px;
+    }
+
+    .status {
+        gap: 8px;
+        font-size: 8px;
+    }
+
+    .topPlanetsBtn {
+        min-width: 90px;
+        padding: 7px 9px;
+        font-size: 9px;
+    }
+
+    #leftPanel {
+        padding: 9px;
+    }
+
+    .previewHeading h2 {
+        font-size: 9px;
+    }
+
+    #previewPlanetName {
+        font-size: 14px;
+    }
+
+    .previewHint {
+        font-size: 8px;
+    }
+
+    #rightPanel {
+        padding: 10px;
+    }
+
+    #rightPanel > h2 {
+        font-size: 10px;
+    }
+
+    .control {
+        padding: 6px 9px;
+    }
+}
+
+@media (max-width: 560px) {
+
+    #workspace {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 42% 58%;
+    }
+
+    #leftPanel {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    #viewer {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    #rightPanel {
+        grid-column: 1 / 3;
+        grid-row: 2;
+    }
+
+    #bottomBar {
+        grid-template-columns: 1fr 1fr 1.5fr;
+    }
+
+    .status #fpsLabel {
+        display: none;
+    }
 }
