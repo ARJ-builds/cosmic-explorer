@@ -927,3 +927,116 @@ button {
         display: none;
     }
 }
+/* ================================
+   DATABASE DETAILS
+   ================================ */
+
+.databasePlanetHeader {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding-bottom: 10px;
+
+    margin-bottom: 16px;
+
+    border-bottom: 1px solid
+        rgba(0, 210, 255, 0.18);
+}
+
+.databasePlanetHeader h2 {
+    margin: 0 !important;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 17px !important;
+
+    letter-spacing: 2px;
+
+    color: #e8fbff !important;
+
+    text-shadow:
+        0 0 8px rgba(0, 220, 255, 0.4);
+}
+
+.databaseStatusDot {
+    width: 7px;
+    height: 7px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #00d9ff;
+
+    box-shadow:
+        0 0 8px #00d9ff;
+}
+
+.databaseLabel {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 8px;
+
+    letter-spacing: 2px;
+
+    color: #4d9bab;
+}
+
+.databaseDescription {
+    margin-bottom: 20px;
+}
+
+.databaseDescription p {
+    color: #8ebac5 !important;
+
+    font-size: 13px !important;
+
+    line-height: 1.65 !important;
+}
+
+.databaseStats {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+}
+
+.databaseStat {
+    padding: 10px;
+
+    border: 1px solid
+        rgba(0, 190, 230, 0.15);
+
+    background:
+        rgba(0, 50, 70, 0.18);
+}
+
+.databaseStat span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 7px;
+
+    letter-spacing: 1px;
+
+    color: #4d8995;
+}
+
+.databaseStat strong {
+    font-family: "Orbitron", sans-serif;
+
+    font-size: 11px;
+
+    color: #bdefff;
+}
