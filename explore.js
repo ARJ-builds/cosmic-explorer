@@ -1,17 +1,30 @@
-import * as THREE from "three";
-import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+import * as THREE from "./libs/three.module.js";
+import { OrbitControls } from "./libs/addons/controls/OrbitControls.js";
 
 /* =========================================================
    COSMIC EXPLORER
    Main Solar System + Rotating Planet Hologram
    ========================================================= */
 
-
 /* =========================================================
-   BASIC SETUP
+   DOM
    ========================================================= */
 
 const canvasContainer = document.getElementById("canvas-container");
+const previewContainer = document.getElementById("planet-preview-container");
+const previewName = document.getElementById("previewPlanetName");
+
+if (!canvasContainer) {
+    throw new Error("Missing #canvas-container");
+}
+
+if (!previewContainer) {
+    throw new Error("Missing #planet-preview-container");
+}
+
+/* =========================================================
+   MAIN SCENE
+   ========================================================= */
 
 const scene = new THREE.Scene();
 
@@ -19,13 +32,13 @@ scene.background = new THREE.Color(0x01040a);
 
 const camera = new THREE.PerspectiveCamera(
     60,
-    canvasContainer.clientWidth / canvasContainer.clientHeight,
+    Math.max(canvasContainer.clientWidth, 1) /
+        Math.max(canvasContainer.clientHeight, 1),
     0.1,
     5000
 );
 
 camera.position.set(0, 100, 300);
-
 
 /* =========================================================
    MAIN RENDERER
@@ -40,17 +53,20 @@ renderer.setPixelRatio(
 );
 
 renderer.setSize(
-    canvasContainer.clientWidth,
-    canvasContainer.clientHeight
+    Math.max(canvasContainer.clientWidth, 1),
+    Math.max(canvasContainer.clientHeight, 1)
 );
 
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+if ("outputColorSpace" in renderer) {
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+}
 
-canvasContainer.appendChild(renderer.domElement);
-
+canvasContainer.appendChild(
+    renderer.domElement
+);
 
 /* =========================================================
-   ORBIT CONTROLS
+   MAIN CAMERA CONTROLS
    ========================================================= */
 
 const controls = new OrbitControls(
@@ -59,25 +75,21 @@ const controls = new OrbitControls(
 );
 
 controls.enableDamping = true;
-
 controls.dampingFactor = 0.05;
 
 controls.minDistance = 20;
-
 controls.maxDistance = 1500;
-
 
 /* =========================================================
    LIGHTING
    ========================================================= */
 
-const ambientLight = new THREE.AmbientLight(
-    0xffffff,
-    0.45
+scene.add(
+    new THREE.AmbientLight(
+        0xffffff,
+        0.45
+    )
 );
-
-scene.add(ambientLight);
-
 
 const sunLight = new THREE.PointLight(
     0xffffff,
@@ -85,10 +97,15 @@ const sunLight = new THREE.PointLight(
     2500
 );
 
-sunLight.position.set(0, 0, 0);
+sunLight.position.set(
+    0,
+    0,
+    0
+);
 
-scene.add(sunLight);
-
+scene.add(
+    sunLight
+);
 
 /* =========================================================
    STARS
@@ -96,29 +113,34 @@ scene.add(sunLight);
 
 function createStars() {
 
-    const starGeometry =
+    const geometry =
         new THREE.BufferGeometry();
 
-    const starCount = 5000;
+    const count = 5000;
 
     const positions =
-        new Float32Array(starCount * 3);
+        new Float32Array(
+            count * 3
+        );
 
-    for (let i = 0; i < starCount; i++) {
+    for (let i = 0; i < count; i++) {
 
         const i3 = i * 3;
 
         positions[i3] =
-            (Math.random() - 0.5) * 4000;
+            (Math.random() - 0.5) *
+            4000;
 
         positions[i3 + 1] =
-            (Math.random() - 0.5) * 4000;
+            (Math.random() - 0.5) *
+            4000;
 
         positions[i3 + 2] =
-            (Math.random() - 0.5) * 4000;
+            (Math.random() - 0.5) *
+            4000;
     }
 
-    starGeometry.setAttribute(
+    geometry.setAttribute(
         "position",
         new THREE.BufferAttribute(
             positions,
@@ -126,26 +148,27 @@ function createStars() {
         )
     );
 
-    const starMaterial =
+    const material =
         new THREE.PointsMaterial({
             color: 0x8feaff,
             size: 1.4,
             sizeAttenuation: true
         });
 
-    const stars =
+    const starsObject =
         new THREE.Points(
-            starGeometry,
-            starMaterial
+            geometry,
+            material
         );
 
-    scene.add(stars);
+    scene.add(
+        starsObject
+    );
 
-    return stars;
+    return starsObject;
 }
 
 const stars = createStars();
-
 
 /* =========================================================
    TEXTURES
@@ -156,86 +179,96 @@ const loader =
 
 const textures = {
 
-    sun: loader.load("./textures/sun.jfif"),
+    sun:
+        loader.load(
+            "./textures/sun.jfif"
+        ),
 
     mercury:
-        loader.load("./textures/mercury.jfif"),
+        loader.load(
+            "./textures/mercury.jfif"
+        ),
 
     venus:
-        loader.load("./textures/venus.jfif"),
+        loader.load(
+            "./textures/venus.jfif"
+        ),
 
     earth:
-        loader.load("./textures/earth.jpg"),
+        loader.load(
+            "./textures/earth.jpg"
+        ),
 
     mars:
-        loader.load("./textures/mars.jfif"),
+        loader.load(
+            "./textures/mars.jfif"
+        ),
 
     jupiter:
-        loader.load("./textures/jupiter.jfif"),
+        loader.load(
+            "./textures/jupiter.jfif"
+        ),
 
     saturn:
-        loader.load("./textures/saturn.jfif"),
+        loader.load(
+            "./textures/saturn.jfif"
+        ),
 
     uranus:
-        loader.load("./textures/uranus.jfif"),
+        loader.load(
+            "./textures/uranus.jfif"
+        ),
 
     neptune:
-        loader.load("./textures/neptune.jfif"),
+        loader.load(
+            "./textures/neptune.jfif"
+        ),
 
     ring:
-        loader.load("./textures/saturn_ring.png")
+        loader.load(
+            "./textures/saturn_ring.png"
+        )
 };
 
 /* =========================================================
    SUN
+   Sun is NOT part of the selectable PLANETS list.
    ========================================================= */
-
-const sunGeometry =
-    new THREE.SphereGeometry(
-        18,
-        64,
-        64
-    );
-
-const sunMaterial =
-    new THREE.MeshBasicMaterial({
-        map: textures.sun
-    });
 
 const sun =
     new THREE.Mesh(
-        sunGeometry,
-        sunMaterial
+
+        new THREE.SphereGeometry(
+            18,
+            64,
+            64
+        ),
+
+        new THREE.MeshBasicMaterial({
+            map: textures.sun
+        })
     );
 
-scene.add(sun);
-
+scene.add(
+    sun
+);
 
 /* =========================================================
-   SOLAR SYSTEM
+   PLANET DATA
+   Sun intentionally excluded from this array.
    ========================================================= */
-
-const solar = [];
-
 
 const PLANETS = [
 
     {
-        name: "Sun",
-        radius: 18,
-        distance: 0,
-        speed: 0,
-        texture: textures.sun,
-
-        description:
-            "The Sun is the star at the center of our Solar System. It provides the light and heat that make life on Earth possible."
-    },
-
-    {
         name: "Mercury",
+
         radius: 3,
+
         distance: 35,
+
         speed: 0.04,
+
         texture: textures.mercury,
 
         description:
@@ -244,9 +277,13 @@ const PLANETS = [
 
     {
         name: "Venus",
+
         radius: 5,
+
         distance: 55,
+
         speed: 0.025,
+
         texture: textures.venus,
 
         description:
@@ -255,9 +292,13 @@ const PLANETS = [
 
     {
         name: "Earth",
+
         radius: 5.5,
+
         distance: 75,
+
         speed: 0.02,
+
         texture: textures.earth,
 
         description:
@@ -266,9 +307,13 @@ const PLANETS = [
 
     {
         name: "Mars",
+
         radius: 4,
+
         distance: 100,
+
         speed: 0.016,
+
         texture: textures.mars,
 
         description:
@@ -277,9 +322,13 @@ const PLANETS = [
 
     {
         name: "Jupiter",
+
         radius: 12,
+
         distance: 145,
+
         speed: 0.009,
+
         texture: textures.jupiter,
 
         description:
@@ -288,9 +337,13 @@ const PLANETS = [
 
     {
         name: "Saturn",
+
         radius: 10,
+
         distance: 195,
+
         speed: 0.007,
+
         texture: textures.saturn,
 
         description:
@@ -299,9 +352,13 @@ const PLANETS = [
 
     {
         name: "Uranus",
+
         radius: 7,
+
         distance: 240,
+
         speed: 0.005,
+
         texture: textures.uranus,
 
         description:
@@ -310,9 +367,13 @@ const PLANETS = [
 
     {
         name: "Neptune",
+
         radius: 7,
+
         distance: 285,
+
         speed: 0.004,
+
         texture: textures.neptune,
 
         description:
@@ -320,6 +381,80 @@ const PLANETS = [
     }
 
 ];
+
+/* =========================================================
+   SOLAR SYSTEM
+   ========================================================= */
+
+const solar = [];
+
+/* =========================================================
+   CREATE ORBIT
+   ========================================================= */
+
+function createOrbit(radius) {
+
+    const points = [];
+
+    const segments = 128;
+
+    for (
+        let i = 0;
+        i <= segments;
+        i++
+    ) {
+
+        const angle =
+            (i / segments) *
+            Math.PI *
+            2;
+
+        points.push(
+            new THREE.Vector3(
+                Math.cos(angle) *
+                    radius,
+
+                0,
+
+                Math.sin(angle) *
+                    radius
+            )
+        );
+    }
+
+    const geometry =
+        new THREE.BufferGeometry()
+            .setFromPoints(
+                points
+            );
+
+    const material =
+        new THREE.LineBasicMaterial({
+            color: 0x075d70,
+            transparent: true,
+            opacity: 0.45
+        });
+
+    const orbit =
+        new THREE.Line(
+            geometry,
+            material
+        );
+
+    scene.add(
+        orbit
+    );
+
+    return orbit;
+}
+
+/* =========================================================
+   CREATE PLANET
+   ========================================================= */
+
+function createPlanet(
+    planetInfo
+) {
 
     const geometry =
         new THREE.SphereGeometry(
@@ -341,76 +476,41 @@ const PLANETS = [
             material
         );
 
-    mesh.position.x =
-        planetInfo.distance;
+    mesh.position.set(
+        planetInfo.distance,
+        0,
+        0
+    );
 
     mesh.userData = {
         ...planetInfo
     };
 
-    scene.add(mesh);
+    scene.add(
+        mesh
+    );
 
+    createOrbit(
+        planetInfo.distance
+    );
 
-    /* ==============================================
-       ORBIT LINE
-       ============================================== */
-
-    const orbitPoints = [];
-
-    const segments = 128;
-
-    for (let i = 0; i <= segments; i++) {
-
-        const angle =
-            (i / segments) *
-            Math.PI *
-            2;
-
-        orbitPoints.push(
-            new THREE.Vector3(
-                Math.cos(angle) *
-                    planetInfo.distance,
-
-                0,
-
-                Math.sin(angle) *
-                    planetInfo.distance
-            )
-        );
-    }
-
-    const orbitGeometry =
-        new THREE.BufferGeometry()
-            .setFromPoints(
-                orbitPoints
-            );
-
-    const orbitMaterial =
-        new THREE.LineBasicMaterial({
-            color: 0x075d70,
-            transparent: true,
-            opacity: 0.45
-        });
-
-    const orbit =
-        new THREE.Line(
-            orbitGeometry,
-            orbitMaterial
-        );
-
-    scene.add(orbit);
-
-
-    /* ==============================================
+    /* =====================================================
        SATURN RINGS
-       ============================================== */
+       ===================================================== */
 
-    if (planetInfo.name === "Saturn") {
+    if (
+        planetInfo.name ===
+        "Saturn"
+    ) {
 
         const ringGeometry =
             new THREE.RingGeometry(
-                planetInfo.radius * 1.25,
-                planetInfo.radius * 2,
+                planetInfo.radius *
+                    1.25,
+
+                planetInfo.radius *
+                    2,
+
                 96
             );
 
@@ -431,49 +531,71 @@ const PLANETS = [
         ring.rotation.x =
             Math.PI / 2.6;
 
-        mesh.add(ring);
+        ring.userData.parentPlanet =
+            mesh;
 
-        mesh.userData.ring = ring;
+        mesh.add(
+            ring
+        );
+
+        mesh.userData.ring =
+            ring;
     }
 
-
     solar.push({
+
         mesh,
+
         info: planetInfo,
-        angle: Math.random() * Math.PI * 2
+
+        angle:
+            Math.random() *
+            Math.PI *
+            2
     });
+}
 
-};
+/* =========================================================
+   CREATE ALL PLANETS
+   ========================================================= */
 
+PLANETS.forEach(
+    createPlanet
+);
 
 /* =========================================================
    PLANET HOLOGRAM PREVIEW
    ========================================================= */
 
-const previewContainer =
-    document.getElementById(
-        "planet-preview-container"
-    );
-
-const previewName =
-    document.getElementById(
-        "previewPlanetName"
-    );
-
-
 const previewScene =
     new THREE.Scene();
 
 previewScene.background =
-    new THREE.Color(0x020914);
+    new THREE.Color(
+        0x020914
+    );
 
+const previewWidth =
+    Math.max(
+        previewContainer.clientWidth,
+        1
+    );
+
+const previewHeight =
+    Math.max(
+        previewContainer.clientHeight,
+        1
+    );
 
 const previewCamera =
     new THREE.PerspectiveCamera(
         38,
-        previewContainer.clientWidth /
-            previewContainer.clientHeight,
+
+        previewWidth /
+            previewHeight,
+
         0.1,
+
         100
     );
 
@@ -483,33 +605,42 @@ previewCamera.position.set(
     5.2
 );
 
-
 /* =========================================================
    PREVIEW RENDERER
    ========================================================= */
 
 const previewRenderer =
     new THREE.WebGLRenderer({
+
         antialias: true,
+
         alpha: true
     });
 
 previewRenderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
 );
 
 previewRenderer.setSize(
-    previewContainer.clientWidth,
-    previewContainer.clientHeight
+    previewWidth,
+    previewHeight
 );
 
-previewRenderer.outputColorSpace =
-    THREE.SRGBColorSpace;
+if (
+    "outputColorSpace" in
+    previewRenderer
+) {
+
+    previewRenderer.outputColorSpace =
+        THREE.SRGBColorSpace;
+}
 
 previewContainer.appendChild(
     previewRenderer.domElement
 );
-
 
 /* =========================================================
    PREVIEW LIGHTING
@@ -521,7 +652,6 @@ previewScene.add(
         1.25
     )
 );
-
 
 const previewKeyLight =
     new THREE.DirectionalLight(
@@ -538,7 +668,6 @@ previewKeyLight.position.set(
 previewScene.add(
     previewKeyLight
 );
-
 
 const previewRimLight =
     new THREE.PointLight(
@@ -557,41 +686,82 @@ previewScene.add(
     previewRimLight
 );
 
-
 /* =========================================================
    PREVIEW PLANET
    ========================================================= */
 
 const previewPlanetMaterial =
     new THREE.MeshStandardMaterial({
-        map: textures.earth,
-        roughness: 0.88,
+
+        map: textures.sun,
+
+        roughness: 0.8,
+
         metalness: 0.02
     });
 
-
 const previewPlanet =
     new THREE.Mesh(
+
         new THREE.SphereGeometry(
             1.45,
             64,
             64
         ),
+
         previewPlanetMaterial
     );
 
 previewScene.add(
     previewPlanet
 );
+
+/* =========================================================
+   PREVIEW SATURN RING
+   ========================================================= */
+
+const previewSaturnRing =
+    new THREE.Mesh(
+
+        new THREE.RingGeometry(
+            1.75,
+            2.35,
+            96
+        ),
+
+        new THREE.MeshBasicMaterial({
+
+            map: textures.ring,
+
+            transparent: true,
+
+            side: THREE.DoubleSide,
+
+            opacity: 0.9
+        })
+    );
+
+previewSaturnRing.rotation.x =
+    Math.PI / 2.6;
+
+previewSaturnRing.visible =
+    false;
+
+previewPlanet.add(
+    previewSaturnRing
+);
+
 /* =========================================================
    HOLOGRAM ZOOM
    ========================================================= */
 
 let previewZoom = 5.2;
 
-const PREVIEW_MIN_ZOOM = 2.8;
-const PREVIEW_MAX_ZOOM = 8.5;
+const PREVIEW_MIN_ZOOM =
+    2.8;
 
+const PREVIEW_MAX_ZOOM =
+    8.5;
 
 function updatePreviewZoom() {
 
@@ -599,54 +769,59 @@ function updatePreviewZoom() {
         previewZoom;
 }
 
+const zoomInButton =
+    document.getElementById(
+        "previewZoomIn"
+    );
 
-/* Zoom in */
+const zoomOutButton =
+    document.getElementById(
+        "previewZoomOut"
+    );
 
-document.getElementById(
-    "previewZoomIn"
-).addEventListener(
-    "click",
-    () => {
+if (zoomInButton) {
 
-        previewZoom -= 0.45;
+    zoomInButton.addEventListener(
+        "click",
+        () => {
 
-        previewZoom =
-            Math.max(
-                PREVIEW_MIN_ZOOM,
-                previewZoom
-            );
+            previewZoom =
+                Math.max(
+                    PREVIEW_MIN_ZOOM,
+                    previewZoom -
+                        0.45
+                );
 
-        updatePreviewZoom();
-    }
-);
+            updatePreviewZoom();
+        }
+    );
+}
 
+if (zoomOutButton) {
 
-/* Zoom out */
+    zoomOutButton.addEventListener(
+        "click",
+        () => {
 
-document.getElementById(
-    "previewZoomOut"
-).addEventListener(
-    "click",
-    () => {
+            previewZoom =
+                Math.min(
+                    PREVIEW_MAX_ZOOM,
+                    previewZoom +
+                        0.45
+                );
 
-        previewZoom += 0.45;
+            updatePreviewZoom();
+        }
+    );
+}
 
-        previewZoom =
-            Math.min(
-                PREVIEW_MAX_ZOOM,
-                previewZoom
-            );
-
-        updatePreviewZoom();
-    }
-);
-
-
-/* Mouse wheel zoom */
+/* =========================================================
+   MOUSE WHEEL ZOOM
+   ========================================================= */
 
 previewContainer.addEventListener(
     "wheel",
-    (event) => {
+    event => {
 
         event.preventDefault();
 
@@ -658,6 +833,7 @@ previewContainer.addEventListener(
         previewZoom =
             Math.max(
                 PREVIEW_MIN_ZOOM,
+
                 Math.min(
                     PREVIEW_MAX_ZOOM,
                     previewZoom
@@ -666,47 +842,23 @@ previewContainer.addEventListener(
 
         updatePreviewZoom();
     },
-    { passive: false }
+
+    {
+        passive: false
+    }
 );
 
-
 /* =========================================================
-   PREVIEW SATURN RING
+   UPDATE HOLOGRAM
    ========================================================= */
 
-const previewSaturnRing =
-    new THREE.Mesh(
-        new THREE.RingGeometry(
-            1.75,
-            2.35,
-            96
-        ),
+function updatePlanetPreview(
+    planet
+) {
 
-        new THREE.MeshBasicMaterial({
-            map: textures.ring,
-            transparent: true,
-            side: THREE.DoubleSide,
-            opacity: 0.9
-        })
-    );
-
-previewSaturnRing.rotation.x =
-    Math.PI / 2.6;
-
-previewSaturnRing.visible = false;
-
-previewPlanet.add(
-    previewSaturnRing
-);
-
-
-/* =========================================================
-   UPDATE PLANET PREVIEW
-   ========================================================= */
-
-function updatePlanetPreview(planet) {
-
-    if (!planet) return;
+    if (!planet) {
+        return;
+    }
 
     if (planet.texture) {
 
@@ -720,43 +872,23 @@ function updatePlanetPreview(planet) {
     previewSaturnRing.visible =
         planet.name === "Saturn";
 
-    previewName.textContent =
-        planet.name.toUpperCase();
+    if (previewName) {
+
+        previewName.textContent =
+            planet.name.toUpperCase();
+    }
 }
-
-
-/* Start with Earth */
-updatePlanetPreview({
-    name: "Sun",
-    texture: textures.sun
-});
-
 
 /* =========================================================
-   RESIZE PLANET PREVIEW
+   START HOLOGRAM WITH SUN
    ========================================================= */
 
-function resizePlanetPreview() {
+updatePlanetPreview({
 
-    const width =
-        previewContainer.clientWidth;
+    name: "Sun",
 
-    const height =
-        previewContainer.clientHeight;
-
-    if (!width || !height) return;
-
-    previewCamera.aspect =
-        width / height;
-
-    previewCamera.updateProjectionMatrix();
-
-    previewRenderer.setSize(
-        width,
-        height
-    );
-}
-
+    texture: textures.sun
+});
 
 /* =========================================================
    PLANET SELECTION
@@ -764,111 +896,192 @@ function resizePlanetPreview() {
 
 let selectedPlanet = null;
 
+let glowTimeout = null;
 
-function selectPlanet(mesh) {
+function findPlanetFromObject(
+    object
+) {
 
-    if (!mesh) return;
-
-
-    /* Remove previous glow */
-
-    if (selectedPlanet) {
-
-        selectedPlanet.material.emissive
-            ?.setHex(0x000000);
-
-        selectedPlanet.material.emissiveIntensity = 0;
+    if (!object) {
+        return null;
     }
 
+    if (
+        object.userData &&
+        object.userData.name
+    ) {
 
-    selectedPlanet = mesh;
-
-
-    /* Glow */
-
-    if (mesh.material) {
-
-        if (
-            "emissive" in
-            mesh.material
-        ) {
-
-            mesh.material.emissive =
-                new THREE.Color(
-                    0x00d9ff
-                );
-
-            mesh.material.emissiveIntensity =
-                0.8;
-        }
+        return object;
     }
 
+    if (
+        object.userData &&
+        object.userData.parentPlanet
+    ) {
 
-    updateDatabase(
-        mesh.userData
-    );
+        return object.userData.parentPlanet;
+    }
 
+    if (
+        object.parent &&
+        object.parent.userData &&
+        object.parent.userData.name
+    ) {
 
-    updatePlanetPreview(
-        mesh.userData
-    );
+        return object.parent;
+    }
 
-
-    /* Camera target */
-
-    controls.target.copy(
-        mesh.position
-    );
-
-
-    setTimeout(() => {
-
-        if (
-            selectedPlanet === mesh &&
-            mesh.material &&
-            "emissiveIntensity" in
-            mesh.material
-        ) {
-
-            mesh.material.emissiveIntensity =
-                0;
-        }
-
-    }, 3000);
+    return null;
 }
 
+/* =========================================================
+   SELECT PLANET
+   ========================================================= */
+
+function selectPlanet(
+    mesh
+) {
+
+    const planetMesh =
+        findPlanetFromObject(
+            mesh
+        );
+
+    if (!planetMesh) {
+        return;
+    }
+
+    if (glowTimeout) {
+
+        clearTimeout(
+            glowTimeout
+        );
+
+        glowTimeout = null;
+    }
+
+    /* Remove old glow */
+
+    if (
+        selectedPlanet &&
+        selectedPlanet.material
+    ) {
+
+        if (
+            selectedPlanet.material
+                .emissive
+        ) {
+
+            selectedPlanet.material.emissive.setHex(
+                0x000000
+            );
+        }
+
+        selectedPlanet.material.emissiveIntensity =
+            0;
+    }
+
+    selectedPlanet =
+        planetMesh;
+
+    /* New glow */
+
+    if (
+        selectedPlanet.material &&
+        selectedPlanet.material.emissive
+    ) {
+
+        selectedPlanet.material.emissive.setHex(
+            0x00d9ff
+        );
+
+        selectedPlanet.material.emissiveIntensity =
+            0.8;
+    }
+
+    updateDatabase(
+        selectedPlanet.userData
+    );
+
+    updatePlanetPreview(
+        selectedPlanet.userData
+    );
+
+    controls.target.copy(
+        selectedPlanet.position
+    );
+
+    glowTimeout =
+        setTimeout(
+            () => {
+
+                if (
+                    selectedPlanet ===
+                    planetMesh
+                ) {
+
+                    if (
+                        planetMesh.material &&
+                        planetMesh.material
+                            .emissive
+                    ) {
+
+                        planetMesh.material
+                            .emissive
+                            .setHex(
+                                0x000000
+                            );
+
+                        planetMesh.material
+                            .emissiveIntensity =
+                            0;
+                    }
+                }
+
+            },
+
+            3000
+        );
+}
 
 /* =========================================================
    DATABASE
    ========================================================= */
 
-function updateDatabase(planet) {
+function updateDatabase(
+    planet
+) {
 
     const planetInfo =
         document.getElementById(
             "planetInfo"
         );
 
-    if (!planetInfo || !planet) return;
+    if (
+        !planetInfo ||
+        !planet
+    ) {
 
+        return;
+    }
 
     const description =
         planet.description ||
         "No database description available.";
 
-
     planetInfo.innerHTML = `
 
         <div class="databasePlanetHeader">
 
-            <span class="databaseStatusDot"></span>
+            <span
+                class="databaseStatusDot">
+            </span>
 
             <h2>
                 ${planet.name.toUpperCase()}
             </h2>
 
         </div>
-
 
         <div class="databaseDescription">
 
@@ -882,7 +1095,6 @@ function updateDatabase(planet) {
 
         </div>
 
-
         <div class="databaseStats">
 
             <div class="databaseStat">
@@ -892,15 +1104,10 @@ function updateDatabase(planet) {
                 </span>
 
                 <strong>
-                    ${
-                        planet.name === "Sun"
-                            ? "CENTER"
-                            : planet.distance
-                    }
+                    ${planet.distance}
                 </strong>
 
             </div>
-
 
             <div class="databaseStat">
 
@@ -909,15 +1116,10 @@ function updateDatabase(planet) {
                 </span>
 
                 <strong>
-                    ${
-                        planet.name === "Sun"
-                            ? "—"
-                            : planet.speed
-                    }
+                    ${planet.speed}
                 </strong>
 
             </div>
-
 
             <div class="databaseStat">
 
@@ -930,7 +1132,6 @@ function updateDatabase(planet) {
                 </strong>
 
             </div>
-
 
             <div class="databaseStat">
 
@@ -950,7 +1151,7 @@ function updateDatabase(planet) {
 }
 
 /* =========================================================
-   MOUSE CLICK PLANET DETECTION
+   MAIN PLANET CLICK DETECTION
    ========================================================= */
 
 const raycaster =
@@ -959,34 +1160,38 @@ const raycaster =
 const mouse =
     new THREE.Vector2();
 
-
 renderer.domElement.addEventListener(
     "click",
-    (event) => {
+    event => {
 
         const rect =
-            renderer.domElement.getBoundingClientRect();
+            renderer.domElement
+                .getBoundingClientRect();
 
         mouse.x =
-            ((event.clientX - rect.left) /
-                rect.width) *
-                2 -
+            (
+                (event.clientX -
+                    rect.left) /
+                rect.width
+            ) *
+            2 -
             1;
 
         mouse.y =
             -(
-                (event.clientY - rect.top) /
-                    rect.height
+                (
+                    event.clientY -
+                    rect.top
+                ) /
+                rect.height
             ) *
-                2 +
+            2 +
             1;
-
 
         raycaster.setFromCamera(
             mouse,
             camera
         );
-
 
         const meshes =
             solar.map(
@@ -994,25 +1199,24 @@ renderer.domElement.addEventListener(
                     planet.mesh
             );
 
-
         const intersections =
             raycaster.intersectObjects(
-                meshes
+                meshes,
+                true
             );
 
-
         if (
-            intersections.length > 0
+            intersections.length >
+            0
         ) {
 
             selectPlanet(
-                intersections[0].object
+                intersections[0]
+                    .object
             );
         }
-
     }
 );
-
 
 /* =========================================================
    PLANET SELECTOR
@@ -1033,99 +1237,132 @@ const closePlanetSelector =
         "closePlanetSelector"
     );
 
+/* =========================================================
+   OPEN SELECTOR
+   ========================================================= */
 
-/* Open selector */
+if (
+    planetsBtn &&
+    planetSelector
+) {
 
-planetsBtn.addEventListener(
-    "click",
-    () => {
+    planetsBtn.addEventListener(
+        "click",
+        () => {
 
-        const isOpen =
-            planetSelector.style.display ===
-            "block";
+            const isOpen =
+                planetSelector.style.display ===
+                "block";
 
-        planetSelector.style.display =
-            isOpen
-                ? "none"
-                : "block";
+            planetSelector.style.display =
+                isOpen
+                    ? "none"
+                    : "block";
 
-        planetsBtn.setAttribute(
-            "aria-expanded",
-            String(!isOpen)
-        );
-    }
-);
+            planetsBtn.setAttribute(
+                "aria-expanded",
+                String(!isOpen)
+            );
+        }
+    );
+}
 
+/* =========================================================
+   CLOSE SELECTOR
+   ========================================================= */
 
-/* Close selector */
+if (
+    closePlanetSelector &&
+    planetSelector
+) {
 
-closePlanetSelector.addEventListener(
-    "click",
-    () => {
+    closePlanetSelector.addEventListener(
+        "click",
+        () => {
 
-        planetSelector.style.display =
-            "none";
+            planetSelector.style.display =
+                "none";
 
-        planetsBtn.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-    }
-);
-
-
-/* Planet buttons */
-
-document
-    .querySelectorAll(
-        "#planetList button"
-    )
-    .forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                const planetName =
-                    button.dataset.planet;
-
-                const planet =
-                    solar.find(
-                        p =>
-                            p.info.name ===
-                            planetName
-                    );
-
-
-                if (!planet) return;
-
-
-                selectPlanet(
-                    planet.mesh
-                );
-
-
-                planetSelector.style.display =
-                    "none";
+            if (planetsBtn) {
 
                 planetsBtn.setAttribute(
                     "aria-expanded",
                     "false"
                 );
             }
-        );
+        }
+    );
+}
 
-    });
+/* =========================================================
+   PLANET BUTTONS
+   ========================================================= */
 
+document
+    .querySelectorAll(
+        "#planetList button"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const planetName =
+                        button.dataset
+                            .planet;
+
+                    const planet =
+                        solar.find(
+                            item =>
+                                item.info
+                                    .name ===
+                                planetName
+                        );
+
+                    if (!planet) {
+                        return;
+                    }
+
+                    selectPlanet(
+                        planet.mesh
+                    );
+
+                    if (
+                        planetSelector
+                    ) {
+
+                        planetSelector
+                            .style
+                            .display =
+                            "none";
+                    }
+
+                    if (
+                        planetsBtn
+                    ) {
+
+                        planetsBtn
+                            .setAttribute(
+                                "aria-expanded",
+                                "false"
+                            );
+                    }
+                }
+            );
+        }
+    );
 
 /* =========================================================
    SIMULATION CONTROLS
    ========================================================= */
 
-let isPaused = false;
+let isPaused =
+    false;
 
-let simulationSpeed = 1;
-
+let simulationSpeed =
+    1;
 
 const speedSlider =
     document.getElementById(
@@ -1137,55 +1374,72 @@ const speedDisplay =
         "speedDisplay"
     );
 
+if (speedSlider) {
 
-speedSlider.addEventListener(
-    "input",
-    () => {
+    speedSlider.addEventListener(
+        "input",
+        () => {
 
-        simulationSpeed =
-            Number(
-                speedSlider.value
-            );
+            simulationSpeed =
+                Number(
+                    speedSlider.value
+                );
 
-        speedDisplay.textContent =
-            simulationSpeed.toFixed(1) +
-            "×";
-    }
-);
+            if (
+                speedDisplay
+            ) {
 
-
-/* PLAY */
-
-document.getElementById(
-    "playBtn"
-).addEventListener(
-    "click",
-    () => {
-
-        isPaused = false;
-    }
-);
-
-
-/* PAUSE */
-
-document.getElementById(
-    "pauseBtn"
-).addEventListener(
-    "click",
-    () => {
-
-        isPaused = true;
-    }
-);
-
+                speedDisplay
+                    .textContent =
+                    simulationSpeed
+                        .toFixed(1) +
+                    "×";
+            }
+        }
+    );
+}
 
 /* =========================================================
-   SIMULATION TIME
+   PLAY
    ========================================================= */
 
-let simulationTime = 0;
+const playButton =
+    document.getElementById(
+        "playBtn"
+    );
 
+if (playButton) {
+
+    playButton.addEventListener(
+        "click",
+        () => {
+
+            isPaused =
+                false;
+        }
+    );
+}
+
+/* =========================================================
+   PAUSE
+   ========================================================= */
+
+const pauseButton =
+    document.getElementById(
+        "pauseBtn"
+    );
+
+if (pauseButton) {
+
+    pauseButton.addEventListener(
+        "click",
+        () => {
+
+            isPaused =
+                true;
+        }
+    );
+}
 
 /* =========================================================
    CLOCK
@@ -1196,8 +1450,11 @@ const clockElement =
         "clock"
     );
 
-
 function updateClock() {
+
+    if (!clockElement) {
+        return;
+    }
 
     const now =
         new Date();
@@ -1205,22 +1462,37 @@ function updateClock() {
     const hours =
         String(
             now.getHours()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
     const minutes =
         String(
             now.getMinutes()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
     const seconds =
         String(
             now.getSeconds()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
     clockElement.textContent =
         `${hours}:${minutes}:${seconds}`;
 }
 
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
 
 /* =========================================================
    FPS
@@ -1231,44 +1503,94 @@ const fpsLabel =
         "fpsLabel"
     );
 
-let lastFPSUpdate = performance.now();
+let lastFPSUpdate =
+    performance.now();
 
-let frameCounter = 0;
-
+let frameCounter =
+    0;
 
 /* =========================================================
-   RESIZE
+   SIMULATION TIME
    ========================================================= */
+
+let simulationTime =
+    0;
+
+/* =========================================================
+   PREVIEW RESIZE
+   ========================================================= */
+
+function resizePlanetPreview() {
+
+    const width =
+        previewContainer
+            .clientWidth;
+
+    const height =
+        previewContainer
+            .clientHeight;
+
+    if (
+        !width ||
+        !height
+    ) {
+
+        return;
+    }
+
+    previewCamera.aspect =
+        width /
+        height;
+
+    previewCamera
+        .updateProjectionMatrix();
+
+    previewRenderer.setSize(
+        width,
+        height
+    );
+}
+
+/* =========================================================
+   MAIN RESIZE
+   ========================================================= */
+
+function resizeMainRenderer() {
+
+    const width =
+        canvasContainer
+            .clientWidth;
+
+    const height =
+        canvasContainer
+            .clientHeight;
+
+    if (
+        !width ||
+        !height
+    ) {
+
+        return;
+    }
+
+    camera.aspect =
+        width /
+        height;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        width,
+        height
+    );
+
+    resizePlanetPreview();
+}
 
 window.addEventListener(
     "resize",
-    () => {
-
-        /* Main */
-
-        const width =
-            canvasContainer.clientWidth;
-
-        const height =
-            canvasContainer.clientHeight;
-
-        camera.aspect =
-            width / height;
-
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(
-            width,
-            height
-        );
-
-
-        /* Preview */
-
-        resizePlanetPreview();
-    }
+    resizeMainRenderer
 );
-
 
 /* =========================================================
    ANIMATION
@@ -1277,21 +1599,15 @@ window.addEventListener(
 const animationClock =
     new THREE.Clock();
 
-
 function animate() {
 
     requestAnimationFrame(
         animate
     );
 
-
     const delta =
-        animationClock.getDelta();
-
-
-    /* ==============================================
-       SOLAR SYSTEM
-       ============================================== */
+        animationClock
+            .getDelta();
 
     if (!isPaused) {
 
@@ -1299,14 +1615,14 @@ function animate() {
             delta *
             simulationSpeed;
 
-
         solar.forEach(
             planet => {
 
                 planet.angle +=
                     planet.info.speed *
-                    simulationSpeed;
-
+                    simulationSpeed *
+                    delta *
+                    8;
 
                 planet.mesh.position.x =
                     Math.cos(
@@ -1314,13 +1630,11 @@ function animate() {
                     ) *
                     planet.info.distance;
 
-
                 planet.mesh.position.z =
                     Math.sin(
                         planet.angle
                     ) *
                     planet.info.distance;
-
 
                 planet.mesh.rotation.y +=
                     0.01 *
@@ -1328,23 +1642,13 @@ function animate() {
             }
         );
 
-
         sun.rotation.y +=
             0.002 *
             simulationSpeed;
 
-
         stars.rotation.y +=
             0.00005 *
             simulationSpeed;
-    }
-
-
-    /* ==============================================
-       PLANET HOLOGRAM ROTATION
-       ============================================== */
-
-    if (!isPaused) {
 
         previewPlanet.rotation.y +=
             0.006 *
@@ -1357,10 +1661,9 @@ function animate() {
             );
     }
 
-
-    /* ==============================================
+    /* =====================================================
        RENDER
-       ============================================== */
+       ===================================================== */
 
     controls.update();
 
@@ -1374,10 +1677,9 @@ function animate() {
         previewCamera
     );
 
-
-    /* ==============================================
+    /* =====================================================
        SIMULATION TIME DISPLAY
-       ============================================== */
+       ===================================================== */
 
     const totalSeconds =
         Math.floor(
@@ -1386,30 +1688,41 @@ function animate() {
 
     const hours =
         Math.floor(
-            totalSeconds / 3600
+            totalSeconds /
+            3600
         );
 
     const minutes =
         Math.floor(
-            (totalSeconds % 3600) /
+            (
+                totalSeconds %
+                3600
+            ) /
             60
         );
 
     const seconds =
-        totalSeconds % 60;
+        totalSeconds %
+        60;
 
+    const simTimeElement =
+        document.getElementById(
+            "simTime"
+        );
 
-    document.getElementById(
-        "simTime"
-    ).textContent =
-        `${String(hours).padStart(2, "0")}:` +
-        `${String(minutes).padStart(2, "0")}:` +
-        `${String(seconds).padStart(2, "0")}`;
+    if (
+        simTimeElement
+    ) {
 
+        simTimeElement.textContent =
+            `${String(hours).padStart(2, "0")}:` +
+            `${String(minutes).padStart(2, "0")}:` +
+            `${String(seconds).padStart(2, "0")}`;
+    }
 
-    /* ==============================================
+    /* =====================================================
        FPS
-       ============================================== */
+       ===================================================== */
 
     frameCounter++;
 
@@ -1417,32 +1730,31 @@ function animate() {
         performance.now();
 
     if (
-        now - lastFPSUpdate >=
+        now -
+        lastFPSUpdate >=
         1000
     ) {
 
-        fpsLabel.textContent =
-            `FPS ${frameCounter}`;
+        if (fpsLabel) {
 
-        frameCounter = 0;
+            fpsLabel.textContent =
+                `FPS ${frameCounter}`;
+        }
 
-        lastFPSUpdate = now;
+        frameCounter =
+            0;
+
+        lastFPSUpdate =
+            now;
     }
-
 }
-
 
 /* =========================================================
    START
    ========================================================= */
 
-resizePlanetPreview();
+resizeMainRenderer();
 
-updateClock();
-
-setInterval(
-    updateClock,
-    1000
-);
+updatePreviewZoom();
 
 animate();
