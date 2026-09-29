@@ -194,11 +194,25 @@ const textures = {
 const PLANETS = [
 
     {
+        name: "Sun",
+        radius: 18,
+        distance: 0,
+        speed: 0,
+        texture: textures.sun,
+
+        description:
+            "The Sun is the star at the center of our Solar System. It provides the light and heat that make life on Earth possible."
+    },
+
+    {
         name: "Mercury",
         radius: 3,
         distance: 35,
         speed: 0.04,
-        texture: textures.mercury
+        texture: textures.mercury,
+
+        description:
+            "Mercury is the smallest planet and the closest planet to the Sun. It has a rocky surface and experiences very large temperature changes."
     },
 
     {
@@ -206,7 +220,10 @@ const PLANETS = [
         radius: 5,
         distance: 55,
         speed: 0.025,
-        texture: textures.venus
+        texture: textures.venus,
+
+        description:
+            "Venus is the second planet from the Sun. It has a thick atmosphere dominated by carbon dioxide and is the hottest planet in the Solar System."
     },
 
     {
@@ -214,7 +231,10 @@ const PLANETS = [
         radius: 5.5,
         distance: 75,
         speed: 0.02,
-        texture: textures.earth
+        texture: textures.earth,
+
+        description:
+            "Earth is the third planet from the Sun and the only known planet to support life. Its surface contains liquid water and a protective atmosphere."
     },
 
     {
@@ -222,7 +242,10 @@ const PLANETS = [
         radius: 4,
         distance: 100,
         speed: 0.016,
-        texture: textures.mars
+        texture: textures.mars,
+
+        description:
+            "Mars is the fourth planet from the Sun. It is a cold, rocky world known for its reddish appearance and evidence of ancient water activity."
     },
 
     {
@@ -230,7 +253,10 @@ const PLANETS = [
         radius: 12,
         distance: 145,
         speed: 0.009,
-        texture: textures.jupiter
+        texture: textures.jupiter,
+
+        description:
+            "Jupiter is the largest planet in the Solar System. It is a gas giant with powerful storms, including the famous Great Red Spot."
     },
 
     {
@@ -238,7 +264,10 @@ const PLANETS = [
         radius: 10,
         distance: 195,
         speed: 0.007,
-        texture: textures.saturn
+        texture: textures.saturn,
+
+        description:
+            "Saturn is the sixth planet from the Sun and is famous for its spectacular ring system. It is a gas giant composed mainly of hydrogen and helium."
     },
 
     {
@@ -246,7 +275,10 @@ const PLANETS = [
         radius: 7,
         distance: 240,
         speed: 0.005,
-        texture: textures.uranus
+        texture: textures.uranus,
+
+        description:
+            "Uranus is an ice giant with a blue-green appearance caused by methane in its atmosphere. Its extreme axial tilt gives it unusual seasons."
     },
 
     {
@@ -254,11 +286,13 @@ const PLANETS = [
         radius: 7,
         distance: 285,
         speed: 0.004,
-        texture: textures.neptune
+        texture: textures.neptune,
+
+        description:
+            "Neptune is the eighth and most distant major planet from the Sun. It is an ice giant with a deep blue atmosphere and extremely fast winds."
     }
 
 ];
-
 
 /* =========================================================
    SUN
@@ -292,7 +326,108 @@ scene.add(sun);
 const solar = [];
 
 
-PLANETS.forEach((planetInfo) => {
+const PLANETS = [
+
+    {
+        name: "Sun",
+        radius: 18,
+        distance: 0,
+        speed: 0,
+        texture: textures.sun,
+
+        description:
+            "The Sun is the star at the center of our Solar System. It provides the light and heat that make life on Earth possible."
+    },
+
+    {
+        name: "Mercury",
+        radius: 3,
+        distance: 35,
+        speed: 0.04,
+        texture: textures.mercury,
+
+        description:
+            "Mercury is the smallest planet and the closest planet to the Sun. It has a rocky surface and experiences very large temperature changes."
+    },
+
+    {
+        name: "Venus",
+        radius: 5,
+        distance: 55,
+        speed: 0.025,
+        texture: textures.venus,
+
+        description:
+            "Venus is the second planet from the Sun. It has a thick atmosphere dominated by carbon dioxide and is the hottest planet in the Solar System."
+    },
+
+    {
+        name: "Earth",
+        radius: 5.5,
+        distance: 75,
+        speed: 0.02,
+        texture: textures.earth,
+
+        description:
+            "Earth is the third planet from the Sun and the only known planet to support life. Its surface contains liquid water and a protective atmosphere."
+    },
+
+    {
+        name: "Mars",
+        radius: 4,
+        distance: 100,
+        speed: 0.016,
+        texture: textures.mars,
+
+        description:
+            "Mars is the fourth planet from the Sun. It is a cold, rocky world known for its reddish appearance and evidence of ancient water activity."
+    },
+
+    {
+        name: "Jupiter",
+        radius: 12,
+        distance: 145,
+        speed: 0.009,
+        texture: textures.jupiter,
+
+        description:
+            "Jupiter is the largest planet in the Solar System. It is a gas giant with powerful storms, including the famous Great Red Spot."
+    },
+
+    {
+        name: "Saturn",
+        radius: 10,
+        distance: 195,
+        speed: 0.007,
+        texture: textures.saturn,
+
+        description:
+            "Saturn is the sixth planet from the Sun and is famous for its spectacular ring system. It is a gas giant composed mainly of hydrogen and helium."
+    },
+
+    {
+        name: "Uranus",
+        radius: 7,
+        distance: 240,
+        speed: 0.005,
+        texture: textures.uranus,
+
+        description:
+            "Uranus is an ice giant with a blue-green appearance caused by methane in its atmosphere. Its extreme axial tilt gives it unusual seasons."
+    },
+
+    {
+        name: "Neptune",
+        radius: 7,
+        distance: 285,
+        speed: 0.004,
+        texture: textures.neptune,
+
+        description:
+            "Neptune is the eighth and most distant major planet from the Sun. It is an ice giant with a deep blue atmosphere and extremely fast winds."
+    }
+
+];
 
     const geometry =
         new THREE.SphereGeometry(
