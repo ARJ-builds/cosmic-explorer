@@ -834,13 +834,10 @@ function updatePlanetPreview(planet) {
 
 
 /* Start with Earth */
-
-updatePlanetPreview(
-    PLANETS.find(
-        planet =>
-            planet.name === "Earth"
-    )
-);
+updatePlanetPreview({
+    name: "Sun",
+    texture: textures.sun
+});
 
 
 /* =========================================================
