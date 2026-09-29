@@ -3,14 +3,16 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cosmic Explorer</title>
+    <title>Cosmic Explorer</title>
 
-<link rel="stylesheet" href="explore.css">
+    <link rel="stylesheet" href="explore.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;600&display=swap"
+        rel="stylesheet">
 
 </head>
 
@@ -18,141 +20,309 @@
 
 <div id="app">
 
-    <!-- TOP BAR -->
+    <!-- =========================
+         TOP BAR
+    ========================== -->
 
     <header id="topBar">
 
-        <a href="index.html" class="logo-link"><div class="logo">
-            COSMIC EXPLORER
-        </div></a>
+        <a href="index.html" class="logo-link">
+            <div class="logo">
+                COSMIC EXPLORER
+            </div>
+        </a>
 
-        <div class="status">
+        <div class="topActions">
 
-            <span id="fpsLabel">FPS --</span>
+            <button
+                id="planetsBtn"
+                class="topPlanetsBtn"
+                aria-expanded="false">
 
-            <span id="clock">00:00:00</span>
+                PLANETS
+                <span aria-hidden="true">⌄</span>
+
+            </button>
+
+            <div class="status">
+
+                <span id="fpsLabel">
+                    FPS --
+                </span>
+
+                <span id="clock">
+                    00:00:00
+                </span>
+
+            </div>
 
         </div>
 
     </header>
 
-    <!-- CENTER -->
+
+    <!-- =========================
+         WORKSPACE
+    ========================== -->
 
     <div id="workspace">
 
-        <!-- LEFT -->
 
-        <aside id="leftPanel">
+        <!-- =====================
+             LEFT PLANET HOLOGRAM
+        ====================== -->
 
-            <h2>NAVIGATION</h2>
+        <aside
+            id="leftPanel"
+            aria-label="Rotating planet preview">
 
-            <button id="solarSystemBtn">Solar System</button>
-            <button id="planetsBtn">Planets</button>
-            <button id="galleryBtn">Gallery</button>
-            <button id="settingsBtn">Settings</button>
+            <div class="previewHeading">
+
+                <span class="statusDot"></span>
+
+                <h2>
+                    PLANET HOLOGRAM
+                </h2>
+
+            </div>
+
+
+            <div id="planet-preview-container">
+
+                <div
+                    class="previewReticle previewReticleOne">
+                </div>
+
+                <div
+                    class="previewReticle previewReticleTwo">
+                </div>
+
+            </div>
+
+
+            <div class="previewCaption">
+
+                <span class="previewLabel">
+                    CURRENT TARGET
+                </span>
+
+                <strong id="previewPlanetName">
+                    EARTH
+                </strong>
+
+                <span class="previewHint">
+                    ROTATING 3D MODEL
+                </span>
+
+            </div>
 
         </aside>
 
-        <!-- VIEW -->
+
+        <!-- =====================
+             MAIN SOLAR SYSTEM
+        ====================== -->
 
         <main id="viewer">
 
-    <div id="canvas-container"></div>
+            <div id="canvas-container"></div>
 
-    <div id="crosshair"></div>
+            <div id="crosshair"></div>
 
-    <!-- PLANET SELECTION PANEL -->
 
-    <div id="planetSelector">
+            <!-- =================
+                 PLANET SELECTOR
+            ================== -->
 
-        <div class="planetSelectorHeader">
-            <span>PLANETS</span>
-            <button id="closePlanetSelector">×</button>
-        </div>
+            <div id="planetSelector">
 
-        <div id="planetList">
+                <div class="planetSelectorHeader">
 
-            <button data-planet="Mercury">Mercury</button>
-            <button data-planet="Venus">Venus</button>
-            <button data-planet="Earth">Earth</button>
-            <button data-planet="Mars">Mars</button>
-            <button data-planet="Jupiter">Jupiter</button>
-            <button data-planet="Saturn">Saturn</button>
-            <button data-planet="Uranus">Uranus</button>
-            <button data-planet="Neptune">Neptune</button>
+                    <span>
+                        PLANETS
+                    </span>
 
-        </div>
+                    <button
+                        id="closePlanetSelector"
+                        aria-label="Close planet selector">
 
-    </div>
+                        ×
 
-</main>
+                    </button>
 
-        <!-- RIGHT -->
+                </div>
+
+
+                <div id="planetList">
+
+                    <button data-planet="Mercury">
+                        Mercury
+                    </button>
+
+                    <button data-planet="Venus">
+                        Venus
+                    </button>
+
+                    <button data-planet="Earth">
+                        Earth
+                    </button>
+
+                    <button data-planet="Mars">
+                        Mars
+                    </button>
+
+                    <button data-planet="Jupiter">
+                        Jupiter
+                    </button>
+
+                    <button data-planet="Saturn">
+                        Saturn
+                    </button>
+
+                    <button data-planet="Uranus">
+                        Uranus
+                    </button>
+
+                    <button data-planet="Neptune">
+                        Neptune
+                    </button>
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+        <!-- =====================
+             RIGHT DATABASE
+        ====================== -->
 
         <aside id="rightPanel">
 
-            <h2>DATABASE</h2>
+            <h2>
+                DATABASE
+            </h2>
 
             <div id="planetInfo">
 
-    <h2>SELECT A PLANET</h2>
+                <h2>
+                    SELECT A PLANET
+                </h2>
 
-    <p>
-        Click any planet in the Solar System.
-    </p>
+                <p>
+                    Click any planet in the Solar System.
+                </p>
 
-    <button id="openDatabaseBtn" style="display:none;">
-        OPEN DATABASE
-    </button>
+                <button
+                    id="openDatabaseBtn"
+                    style="display:none;">
 
-</div>
+                    OPEN DATABASE
+
+                </button>
+
+            </div>
 
         </aside>
 
     </div>
 
-    <!-- BOTTOM -->
+
+    <!-- =========================
+         BOTTOM CONTROL BAR
+    ========================== -->
 
     <footer id="bottomBar">
 
-    <div class="control">
-        <h3>SIM TIME</h3>
-        <p id="simTime">00:00:00</p>
-    </div>
 
-    <div class="control">
-        <h3>CAMERA</h3>
-        <p id="cameraMode">FREE ORBIT</p>
-    </div>
+        <!-- SIMULATION TIME -->
 
-    <div class="control">
+        <div class="control">
 
-        <h3>SPEED</h3>
+            <h3>
+                SIM TIME
+            </h3>
 
-        <p id="speedDisplay">1.0×</p>
-
-        <input
-            type="range"
-            id="speedSlider"
-            min="0.1"
-            max="100"
-            step="0.1"
-            value="1">
-
-        <div>
-
-            <button id="playBtn">▶</button>
-
-            <button id="pauseBtn">⏸</button>
+            <p id="simTime">
+                00:00:00
+            </p>
 
         </div>
 
-    </div>
 
-</footer>
+        <!-- CAMERA -->
+
+        <div class="control">
+
+            <h3>
+                CAMERA
+            </h3>
+
+            <p id="cameraMode">
+                FREE ORBIT
+            </p>
+
+        </div>
+
+
+        <!-- SPEED -->
+
+        <div class="control">
+
+            <h3>
+                SPEED
+            </h3>
+
+            <p id="speedDisplay">
+                1.0×
+            </p>
+
+
+            <input
+                type="range"
+                id="speedSlider"
+                min="0.1"
+                max="100"
+                step="0.1"
+                value="1">
+
+
+            <div>
+
+                <button
+                    id="playBtn"
+                    aria-label="Play simulation">
+
+                    ▶
+
+                </button>
+
+                <button
+                    id="pauseBtn"
+                    aria-label="Pause simulation">
+
+                    ⏸
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </footer>
+
 </div>
 
-<script type="module" src="explore.js"></script>
+
+<!-- =========================
+     JAVASCRIPT
+========================== -->
+
+<script
+    type="module"
+    src="explore.js">
+</script>
 
 </body>
 
