@@ -328,7 +328,6 @@ const solar = [];
 PLANETS.filter(
     planetInfo => planetInfo.name !== "Sun"
 ).forEach((planetInfo) => {
-
     const geometry =
         new THREE.SphereGeometry(
             planetInfo.radius,
@@ -591,6 +590,91 @@ const previewPlanet =
 previewScene.add(
     previewPlanet
 );
+/* =========================================================
+   HOLOGRAM ZOOM
+   ========================================================= */
+
+let previewZoom = 5.2;
+
+const PREVIEW_MIN_ZOOM = 2.8;
+const PREVIEW_MAX_ZOOM = 8.5;
+
+
+function updatePreviewZoom() {
+
+    previewCamera.position.z =
+        previewZoom;
+}
+
+
+/* Zoom in */
+
+document.getElementById(
+    "previewZoomIn"
+).addEventListener(
+    "click",
+    () => {
+
+        previewZoom -= 0.45;
+
+        previewZoom =
+            Math.max(
+                PREVIEW_MIN_ZOOM,
+                previewZoom
+            );
+
+        updatePreviewZoom();
+    }
+);
+
+
+/* Zoom out */
+
+document.getElementById(
+    "previewZoomOut"
+).addEventListener(
+    "click",
+    () => {
+
+        previewZoom += 0.45;
+
+        previewZoom =
+            Math.min(
+                PREVIEW_MAX_ZOOM,
+                previewZoom
+            );
+
+        updatePreviewZoom();
+    }
+);
+
+
+/* Mouse wheel zoom */
+
+previewContainer.addEventListener(
+    "wheel",
+    (event) => {
+
+        event.preventDefault();
+
+        previewZoom +=
+            event.deltaY > 0
+                ? 0.35
+                : -0.35;
+
+        previewZoom =
+            Math.max(
+                PREVIEW_MIN_ZOOM,
+                Math.min(
+                    PREVIEW_MAX_ZOOM,
+                    previewZoom
+                )
+            );
+
+        updatePreviewZoom();
+    },
+    { passive: false }
+);
 
 
 /* =========================================================
@@ -656,45 +740,7 @@ updatePlanetPreview(
             planet.name === "Earth"
     )
 );
-/* =========================================================
-   HOLOGRAM ZOOM CONTROLS
-   ========================================================= */
 
-const previewZoomIn =
-    document.getElementById("previewZoomIn");
-
-const previewZoomOut =
-    document.getElementById("previewZoomOut");
-
-let previewZoom = 5.2;
-
-previewZoomIn.addEventListener("click", () => {
-
-    previewZoom -= 0.4;
-
-    previewZoom = Math.max(
-        2.5,
-        previewZoom
-    );
-
-    previewCamera.position.z =
-        previewZoom;
-
-});
-
-previewZoomOut.addEventListener("click", () => {
-
-    previewZoom += 0.4;
-
-    previewZoom = Math.min(
-        8,
-        previewZoom
-    );
-
-    previewCamera.position.z =
-        previewZoom;
-
-});
 
 /* =========================================================
    RESIZE PLANET PREVIEW
