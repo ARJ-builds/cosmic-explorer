@@ -113,14 +113,35 @@
 
     <script src="script.js"></script>
 
-    <script>
+   <script>
+(function () {
     if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
     }
 
-    window.addEventListener("pageshow", function () {
+    function resetPagePosition() {
+        const html = document.documentElement;
+        const oldBehavior = html.style.scrollBehavior;
+
+        html.style.scrollBehavior = "auto";
+
         window.scrollTo(0, 0);
-    });
+
+        requestAnimationFrame(() => {
+            window.scrollTo(0, 0);
+
+            requestAnimationFrame(() => {
+                window.scrollTo(0, 0);
+                html.style.scrollBehavior = oldBehavior;
+            });
+        });
+    }
+
+    window.addEventListener("load", resetPagePosition);
+    window.addEventListener("pageshow", resetPagePosition);
+
+    resetPagePosition();
+})();
 </script>
 
 </body>
