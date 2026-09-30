@@ -48,16 +48,21 @@ setInterval(createMeteor,10000);
 // Start Mission Button
 // ===============================
 
+// ===============================
+// Start Mission Buttons
+// ===============================
+
 const startButton = document.getElementById("startMission");
+const launchButton = document.getElementById("launchMission");
 
-startButton.addEventListener("click", () => {
-
+function launchMission() {
     document.body.classList.add("launch");
 
     setTimeout(() => {
-
         window.location.href = "explore.html";
-
     }, 1200);
+}
 
-});
+startButton?.addEventListener("click", launchMission);
+launchButton?.addEventListener("click", launchMission);
+
