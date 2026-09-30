@@ -656,7 +656,45 @@ updatePlanetPreview(
             planet.name === "Earth"
     )
 );
+/* =========================================================
+   HOLOGRAM ZOOM CONTROLS
+   ========================================================= */
 
+const previewZoomIn =
+    document.getElementById("previewZoomIn");
+
+const previewZoomOut =
+    document.getElementById("previewZoomOut");
+
+let previewZoom = 5.2;
+
+previewZoomIn.addEventListener("click", () => {
+
+    previewZoom -= 0.4;
+
+    previewZoom = Math.max(
+        2.5,
+        previewZoom
+    );
+
+    previewCamera.position.z =
+        previewZoom;
+
+});
+
+previewZoomOut.addEventListener("click", () => {
+
+    previewZoom += 0.4;
+
+    previewZoom = Math.min(
+        8,
+        previewZoom
+    );
+
+    previewCamera.position.z =
+        previewZoom;
+
+});
 
 /* =========================================================
    RESIZE PLANET PREVIEW
