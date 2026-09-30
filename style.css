@@ -417,3 +417,7 @@ body{
     opacity:0;
 
 }
+
+.launch-btn {
+    text-decoration: none;
+}
