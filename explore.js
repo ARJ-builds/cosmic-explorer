@@ -176,7 +176,7 @@ const textures = {
         loader.load("./textures/saturn.jfif"),
 
     uranus:
-        loader.load("./textures/uranus.jfif"),
+        loader.load("./textures/uranus.png"),
 
     neptune:
         loader.load("./textures/neptune.jfif"),
