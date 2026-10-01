@@ -207,6 +207,7 @@ const PLANETS = [
         name: "Mercury",
         radius: 3,
         distance: 35,
+        distanceFromSun: "57.9 million km",
         speed: 0.04,
         texture: textures.mercury,
 
@@ -218,6 +219,7 @@ const PLANETS = [
         name: "Venus",
         radius: 5,
         distance: 55,
+       distanceFromSun: "108.2 million km",
         speed: 0.025,
         texture: textures.venus,
 
@@ -229,6 +231,7 @@ const PLANETS = [
         name: "Earth",
         radius: 5.5,
         distance: 75,
+       distanceFromSun: "149.6 million km",
         speed: 0.02,
         texture: textures.earth,
 
@@ -240,6 +243,7 @@ const PLANETS = [
         name: "Mars",
         radius: 4,
         distance: 100,
+       distanceFromSun: "227.9 million km",
         speed: 0.016,
         texture: textures.mars,
 
@@ -251,6 +255,7 @@ const PLANETS = [
         name: "Jupiter",
         radius: 12,
         distance: 145,
+       distanceFromSun: "778.5 million km",
         speed: 0.009,
         texture: textures.jupiter,
 
@@ -262,6 +267,7 @@ const PLANETS = [
         name: "Saturn",
         radius: 10,
         distance: 195,
+       distanceFromSun: "1.43 billion km",
         speed: 0.007,
         texture: textures.saturn,
 
@@ -273,6 +279,7 @@ const PLANETS = [
         name: "Uranus",
         radius: 7,
         distance: 240,
+       distanceFromSun: "2.87 billion km",
         speed: 0.005,
         texture: textures.uranus,
 
@@ -284,6 +291,7 @@ const PLANETS = [
         name: "Neptune",
         radius: 7,
         distance: 285,
+       distanceFromSun: "4.50 billion km",
         speed: 0.004,
         texture: textures.neptune,
 
@@ -898,16 +906,16 @@ function updateDatabase(planet) {
             <div class="databaseStat">
 
                 <span>
-                    DISTANCE
-                </span>
+    DISTANCE FROM SUN
+</span>
 
-                <strong>
-                    ${
-                        planet.name === "Sun"
-                            ? "CENTER"
-                            : planet.distance
-                    }
-                </strong>
+<strong>
+    ${
+        planet.name === "Sun"
+            ? "CENTER"
+            : planet.distanceFromSun
+    }
+</strong>
 
             </div>
 
